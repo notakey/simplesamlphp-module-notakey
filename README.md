@@ -54,6 +54,8 @@ In sequential logins on other SPs only mobile authentication will be verified.
 
 
 In base config:
+
+```
 "authproc.idp" => array(
 	"90" => array(
 				"class" => "notakey:Filter",
@@ -69,3 +71,4 @@ In base config:
 				  ]
 			 }
 
+```
