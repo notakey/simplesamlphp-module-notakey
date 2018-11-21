@@ -18,8 +18,6 @@ if (!class_exists($classname)){
 }
 */
 
-include (dirname ( __FILE__ ) . '/httpful.phar');
-
 class sspmod_notakey_NtkAsApi {
 
 	/**
