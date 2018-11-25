@@ -12,7 +12,19 @@ class sspmod_notakey_SspNtkBridge {
 	 * Stage constant set in auth.php
 	 */
 
-	const STAGEID = 'notakey:Process';
+    const STAGEID = 'notakey:Process';
+
+    /*
+	 * Auth request title
+	 */
+
+    const auth_action = 'Confirm login';
+
+    /*
+	 * Auth request description
+	 */
+
+    const auth_description = 'Log in as %s?';
 
 	/*
 	 * Endpoint configuration array
@@ -189,9 +201,16 @@ class sspmod_notakey_SspNtkBridge {
 		return true;
 	}
 
-
 	public function getServices() {
 		return $this->endpoints;
+    }
+
+    public function getService($endpoint_id) {
+        if (!isset($this->endpoints[$endpoint_id])) {
+			throw new SimpleSAML_Error_Exception ( 'No backend service not defined.' );
+        }
+
+		return $this->endpoints[$endpoint_id];
 	}
 
 	public function setService(&$state, $endpoint_id = null) {

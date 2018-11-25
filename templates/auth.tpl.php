@@ -11,15 +11,15 @@ $this->includeAtTemplateBase('includes/header.php');
 echo($this->data['js_block']);
 if (count($this->data['warning_messages']) > 0) { ?>
 		<?php foreach($this->data['warning_messages'] as $err){ ?>
-		<div class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #f5f5f5">
+		<div class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #f5f5f5;">
 			<div class="float-l">
-				<img src="/<?php echo $this->data['baseurlpath']; ?>resources/icons/experience/gtk-dialog-error.48x48.png" class="erroricon" style="margin: 15px" />
+				<img src="/<?php echo $this->data['baseurlpath']; ?>resources/icons/experience/gtk-dialog-error.48x48.png" class="erroricon" style="margin: 15px;" />
 			</div>
-			<div style="padding-top:0.7rem; padding-left:1rem;" class="float-l">
+			<div style="padding-top: 0.7rem; padding-left: 1rem;" class="float-l">
 				<h2><?php echo $this->t('{login:error_header}'); ?></h2>
 			</div>
 			<div class="clearfix"></div>
-			<div style="padding:1rem;">
+			<div style="padding: 1rem;">
 				<p><?php echo $err; ?> </p>
 			</div>
 			<div class="clearfix"></div>
@@ -114,9 +114,9 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
             <input type="hidden" name="State" value="<?php echo htmlspecialchars($this->data['state_id']); ?>">
         </form>
     </div>
-    <?php if(!$detect->isMobile() && !$detect->isTablet()){ ?>
+    <?php if($only_svc && !$detect->isMobile() && !$detect->isTablet()){ ?>
     <div id="qrCodeView">
-        <img alt="Authentication QR code"  src="/<?php echo $this->data['baseurlpath']; ?>module/notakey/qr" height="300" width="300" />
+        <img alt="Authentication QR code"  src="<?php echo $this->data['qr_link'].'&service_id=0'; ?>" height="300" width="300" />
     </div>
     <?php } ?>
 </div>

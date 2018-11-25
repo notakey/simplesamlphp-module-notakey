@@ -125,6 +125,10 @@ class sspmod_notakey_NtkAsApi {
 
 		$this->l ( "Login request for user $username failed" );
 		return false;
+    }
+
+    public function callback($uuid, $state_id) {
+
 	}
 
 	public function authExt($username, $action = '', $description = '') {
@@ -145,8 +149,8 @@ class sspmod_notakey_NtkAsApi {
 		$method = 'auth_request';
 
 		$p = array (
-				'action' => 'Confirm login',
-				'description' => 'Log in as '.$username.'?'
+            'action' => sspmod_notakey_SspNtkBridge::auth_action,
+            'description' => sprintf(sspmod_notakey_SspNtkBridge::auth_description, $username)
 		);
 
 		if(!empty($action)){

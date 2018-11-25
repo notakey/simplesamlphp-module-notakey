@@ -170,6 +170,7 @@ $t->data['service_list'] = $state['notakey:bridge']->getServices();
 $t->data['warning_messages'] = $warning_messages;
 $t->data['sel_service'] = $service_id;
 $t->data['sel_user'] = $username;
+$t->data['qr_link'] = $base_url."module/notakey/qr?State=".urlencode($stateId);
 
 if (array_key_exists('forcedUsername', $state)) {
 	$t->data['sel_user'] = $state['forcedUsername'];
