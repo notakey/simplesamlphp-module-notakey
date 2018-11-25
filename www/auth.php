@@ -137,8 +137,31 @@ $t->data['jquery'] = array('core' => TRUE, 'ui' => TRUE, 'css' => TRUE);
 
 $base_url = SimpleSAML\Utils\HTTP::getBaseURL();
 
+$t->data['js_qr_check'] = '<script type="text/javascript">
+
+    function getQrAuthProgress(){
+        $.ajax({
+            url: \''.$base_url.'module/notakey/qrstat?State='.urlencode($stateId).'&service_id=0\',
+            success: function(data) {
+                // $("#progress").html(data);
+                if(data == "approved" || data == "denied" || data == "expired") {
+                    location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
+                        return;
+                }
+                getQrAuthProgress();
+            },
+            error: function (err) {
+                console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
+                location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
+            }
+        });
+    }
+
+    getQrAuthProgress();
+</script>';
+
 if($state['notakey:stageOneComplete']){
-		$t->data['js_block'] = '<script type="text/javascript">
+		$t->data['js_block'] = $t->data['js_block'].'<script type="text/javascript">
 
 		    function getProgress(){
 		        $.ajax({
@@ -170,7 +193,7 @@ $t->data['service_list'] = $state['notakey:bridge']->getServices();
 $t->data['warning_messages'] = $warning_messages;
 $t->data['sel_service'] = $service_id;
 $t->data['sel_user'] = $username;
-$t->data['qr_link'] = $base_url."module/notakey/qr?State=".urlencode($stateId);
+$t->data['qr_link'] = $base_url."module/notakey/qr?State=".urlencode($stateId)."&service_id=0";
 
 if (array_key_exists('forcedUsername', $state)) {
 	$t->data['sel_user'] = $state['forcedUsername'];

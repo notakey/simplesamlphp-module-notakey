@@ -1,0 +1,72 @@
+<?php
+
+$loginProcedureExpired = false;
+$badUserPass = false;
+$authRequestDenied = false;
+$apiTestOK = false;
+
+
+$stateId = urldecode($_REQUEST['State']);
+
+if (!isset($_REQUEST['State'])) {
+	echo 'error';
+	throw new SimpleSAML_Error_BadRequest('Missing "State" parameter.');
+}
+
+$service_id = intval($_REQUEST['service_id']);
+
+SimpleSAML\Logger::info("StateID set to $stateId");
+
+$sid = SimpleSAML_Auth_State::parseStateID($stateId);
+
+SimpleSAML\Logger::info("SID data set to ".print_r($sid, true));
+
+$state = SimpleSAML_Auth_State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
+//var_dump($state);
+
+if(!isset($state['notakey:uuid'])){
+    sleep(1);
+    SimpleSAML\Logger::info("No UUID in state");
+	echo 'noop';
+	exit();
+}
+
+if(!($res = $state['notakey:bridge']->queryAuth($state['notakey:uuid']))){
+	sleep(1);
+	echo 'error';
+	exit();
+}
+
+SimpleSAML\Logger::info("queryAuth response data set to ".print_r($res, true));
+if($res['response_type'] == 'ApproveRequest'){
+    SimpleSAML\Logger::info("UUID {$state['notakey:uuid']} login confirmed");
+
+    $state['notakey:attr.logo_url'] = $res['logo_url'];
+    $state['notakey:attr.logo_sash_url'] = $res['logo_sash_url'];
+    $state['notakey:attr.created_at'] = $res['created_at'];
+    $state['notakey:attr.expires_at'] = $res['expires_at'];
+
+    $achain = explode('/', $res['id']);
+
+    if($achain[0] == 'applications'){
+        $state['notakey:attr.guid'] = $achain[3];
+    }
+
+    SimpleSAML_Auth_State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
+
+	echo 'approved';
+	exit();
+}
+
+if($res['response_type'] == 'DenyRequest'){
+	echo 'denied';
+	exit();
+}
+
+if($res['expired'] == '1'){
+	echo 'expired';
+	exit();
+}
+
+echo 'noop';
+sleep(1);

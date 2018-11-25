@@ -127,10 +127,6 @@ class sspmod_notakey_NtkAsApi {
 		return false;
     }
 
-    public function callback($uuid, $state_id) {
-
-	}
-
 	public function authExt($username, $action = '', $description = '') {
 		$domain = '';
 
@@ -257,7 +253,7 @@ class sspmod_notakey_NtkAsApi {
 		return false;
 	}
 
-	public function setLogger($callback 	) {
+	public function setLogger($callback) {
 		$this->logger = $callback;
 	}
 
@@ -266,13 +262,13 @@ class sspmod_notakey_NtkAsApi {
 			call_user_func($this->logger, $msg);
 	}
 
-	private function getServiceAppID(&$state, $service) {
-		$apr = explode ( '/', $this->endpoints [$service] ['api'] );
+	private function getServiceAppID(&$state, $service_id) {
+		$apr = explode ( '/', $this->endpoints[$service_id]['api'] );
 		return array_pop ( $apr );
 	}
 
 	private function checkApiAccess(&$state) {
-		$res = $this->callApi ( '/', 'GET' );
+		$res = $this->callApi ('/', 'GET' );
 
 		$ret = false;
 		if (isset ( $res->id )) {

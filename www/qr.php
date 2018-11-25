@@ -18,15 +18,18 @@ $query['k'] = $endpoint['service_id'];
 $base_url = SimpleSAML\Utils\HTTP::getBaseURL();
 $query['c'] = $base_url."module/notakey/callback";
 
-list($query['s'], $session_data) = explode(":", $stateId, 2);
+list($state_id, $session_data) = explode(":", $stateId, 2);
+$session = SimpleSAML_Session::getSessionFromRequest();
 
+assert('!is_null($$session)');
+
+$query['s'] = $service_id.':'.$state_id.':'.$session->getSessionId();
 
 $query['m'] = sspmod_notakey_SspNtkBridge::auth_action;
 $query['d'] = "Proceed with login to ".$endpoint['name'].'?';
 $query['t'] = 600;
 
-
-// var_dump($state);
+// var_dump($session);
 
 QRcode::png('notakey://qr?'.http_build_query($query), false, QR_ECLEVEL_H, 9, 0);
 
