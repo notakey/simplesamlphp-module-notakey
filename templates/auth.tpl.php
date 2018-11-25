@@ -29,81 +29,97 @@ if (count($this->data['warning_messages']) > 0) { ?>
 <?php
 }
 ?>
-<h2 style="break: both"><?php echo $this->t('{notakey:notakey:login_header}'); ?></h2>
+<h2 id="authHeaderTitle"><?php echo $this->t('{notakey:notakey:login_header}'); ?></h2>
 <p class="logintext"><?php echo $this->t('{notakey:notakey:login_message}'); ?></p>
-
+<div id="authContent">
 <?php
 if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'] != 'pending'){
 ?>
-	<form action="/<?php echo $this->data['baseurlpath']; ?>module/notakey/auth" id="loginForm" method="post">
-		<?php
-		if(count($this->data['service_list']) > 1){
-		?>
-	  	<div class="control-group float-l" style="padding-top: 15px;"><?php echo $this->t('{notakey:notakey:select_auth_message}') ?></div>
-	  	<div class="clearfix"></div>
+    <div id="loginTableView">
+        <form action="/<?php echo $this->data['baseurlpath']; ?>module/notakey/auth" id="loginForm" method="post">
+            <?php
+            if(count($this->data['service_list']) > 1){
+            ?>
+            <div class="control-group float-l" style="padding-top: 15px;"><?php echo $this->t('{notakey:notakey:select_auth_message}') ?></div>
+            <div class="clearfix"></div>
 
-		<?php foreach($this->data['service_list'] as $app_id => $s ){ ?>
-		<div class="control-group float-l service-logo">
-			<label class="service-selector">
-				<input type="radio" name="service_id" value="<?php echo $app_id; ?>" <?php if(isset($this->data['sel_service']) && $app_id == $this->data['sel_service']){ ?>checked="checked"<?php } ?> />
-		    	<img alt="<?php echo $s['name']; ?>"  src="<?php echo $s['service_logo']; ?>" />
-	    	</label>
-	    </div>
-		<?php } ?>
-		<?php
-		}
+            <?php foreach($this->data['service_list'] as $app_id => $s ){ ?>
+            <div class="control-group float-l service-logo">
+                <label class="service-selector">
+                    <input type="radio" name="service_id" value="<?php echo $app_id; ?>" <?php if(isset($this->data['sel_service']) && $app_id == $this->data['sel_service']){ ?>checked="checked"<?php } ?> />
+                    <img alt="<?php echo $s['name']; ?>"  src="<?php echo $s['service_logo']; ?>" />
+                </label>
+            </div>
+            <?php } ?>
+            <?php
+            }
 
-		if(count($this->data['service_list']) == 1){
-			$sv_arr = array_keys($this->data['service_list']);
-			$only_svc = array_pop($this->data['service_list']);
-		}
+            if(count($this->data['service_list']) == 1){
+                $sv_arr = array_keys($this->data['service_list']);
+                $only_svc = array_pop($this->data['service_list']);
+            }
 
-		?>
-		<table id="loginTable">
-			<tbody>
-				<tr>
-					<td colspan="3">
-						<div id="spLoginLogo">
-							<?php if($only_svc){ ?>
-							<img alt="<?php echo $only_svc['name']; ?> logo"  src="<?php echo $only_svc['service_logo']; ?>" />
-							<?php } ?>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<!--  <?php echo $this->t('{notakey:notakey:please_enter_username}') ?> -->
-					<td style="padding: .3em;"><?php echo $this->t('{login:username}'); ?></td>
-					<td><input type="text" value="<?php echo htmlspecialchars(isset($this->data['sel_user']))?$this->data['sel_user']:''; ?>" name="username" id="username" placeholder="" tabindex="1" maxlength="100"></td>
-					<td style="padding: .4em;"><input type="submit" id="regularsubmit" tabindex="3" value="<?php echo $this->t('{login:login_button}'); ?>" /></td>
-				</tr>
-				<?php
-				if ($this->data['rememberMeEnabled']) {
-                // display the remember me checkbox (keep me logged in)
-            	?>
-            	<tr>
-            		<td>&nbsp;</td>
-	                <td id="regular_remember_me" colspan="2">
-	                    <input type="checkbox" id="remember_me" tabindex="4"
-	                        <?php echo ($this->data['rememberMeChecked']) ? 'checked="checked"' : ''; ?>
-	                           name="remember_me" value="Yes"/>
-	                    <small><?php echo $this->t('{login:remember_me}'); ?></small>
-	                </td>
-                </tr>
-	            <?php
-	            }
-	            ?>
-				<tr>
-					<td></td>
-					<td><input type="submit" tabindex="5" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" /></td>
-				</tr>
-			</tbody>
-		</table>
-		<?php if($only_svc){ ?>
-		<input type="hidden" name="service_id" value="0" />
-		<?php } ?>
-		<input type="hidden" name="ReturnTo" value="<?php echo htmlspecialchars($this->data['return_to']); ?>">
-		<input type="hidden" name="State" value="<?php echo htmlspecialchars($this->data['state_id']); ?>">
-	</form>
+            $detect = new Mobile_Detect;
+
+            ?>
+
+            <table id="loginTable">
+                <tbody>
+                    <tr>
+                        <td colspan="3">
+                            <div id="spLoginLogo">
+                                <?php if($only_svc){ ?>
+                                <img alt="<?php echo $only_svc['name']; ?> logo"  src="<?php echo $only_svc['service_logo']; ?>" />
+                                <?php } ?>
+                            </div>
+                        </td>
+                        <td rowspan="3">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <!--  <?php echo $this->t('{notakey:notakey:please_enter_username}') ?> -->
+                        <td style="padding: .3em;"><?php echo $this->t('{login:username}'); ?></td>
+                        <td><input type="text" value="<?php echo htmlspecialchars(isset($this->data['sel_user']))?$this->data['sel_user']:''; ?>" name="username" id="username" placeholder="" tabindex="1" maxlength="100"></td>
+                        <td style="padding: .4em;"><input type="submit" id="regularsubmit" tabindex="3" value="<?php echo $this->t('{login:login_button}'); ?>" /></td>
+                    </tr>
+                    <?php
+                    if ($this->data['rememberMeEnabled']) {
+                    // display the remember me checkbox (keep me logged in)
+                    ?>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td id="regular_remember_me" colspan="2">
+                            <input type="checkbox" id="remember_me" tabindex="4"
+                                <?php echo ($this->data['rememberMeChecked']) ? 'checked="checked"' : ''; ?>
+                                name="remember_me" value="Yes"/>
+                            <small><?php echo $this->t('{login:remember_me}'); ?></small>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <?php
+                    }
+                    ?>
+                    <tr>
+                        <td></td>
+                        <td><input type="submit" tabindex="5" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" /></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <?php if($only_svc){ ?>
+            <input type="hidden" name="service_id" value="0" />
+            <?php } ?>
+            <input type="hidden" name="ReturnTo" value="<?php echo htmlspecialchars($this->data['return_to']); ?>">
+            <input type="hidden" name="State" value="<?php echo htmlspecialchars($this->data['state_id']); ?>">
+        </form>
+    </div>
+    <?php if(!$detect->isMobile() && !$detect->isTablet()){ ?>
+    <div id="qrCodeView">
+        <img alt="Authentication QR code"  src="/<?php echo $this->data['baseurlpath']; ?>module/notakey/qr" height="300" width="300" />
+    </div>
+    <?php } ?>
+</div>
 <?php
 }else{
 ?>
