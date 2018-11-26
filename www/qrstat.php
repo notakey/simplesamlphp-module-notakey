@@ -40,17 +40,8 @@ if(!($res = $state['notakey:bridge']->queryAuth($state['notakey:uuid']))){
 SimpleSAML\Logger::info("queryAuth response data set to ".print_r($res, true));
 if($res['response_type'] == 'ApproveRequest'){
     SimpleSAML\Logger::info("UUID {$state['notakey:uuid']} login confirmed");
-
-    $state['notakey:attr.logo_url'] = $res['logo_url'];
-    $state['notakey:attr.logo_sash_url'] = $res['logo_sash_url'];
-    $state['notakey:attr.created_at'] = $res['created_at'];
-    $state['notakey:attr.expires_at'] = $res['expires_at'];
-
-    $achain = explode('/', $res['id']);
-
-    if($achain[0] == 'applications'){
-        $state['notakey:attr.guid'] = $achain[3];
-    }
+    $state['notakey:bridge']->setAuthState($state, $res);
+    $state['notakey:bridge']->setUser($state, $res);
 
     SimpleSAML_Auth_State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
 

@@ -192,6 +192,11 @@ class sspmod_notakey_SspNtkBridge {
 
 		$state ['notakey:attr.auth_id'] = $res['uuid'];
 
+        // Pre 2.14.2 versions did not have this attribute
+        if(isset($res['user_id'])){
+            $state ['notakey:attr.guid'] = $res['user_id'];
+        }
+
 
 		SimpleSAML\Logger::info("setUser: Populated user $user / {$res['full_name']} / UUID : {$res['uuid']} attribute data" );
 
@@ -285,28 +290,25 @@ class sspmod_notakey_SspNtkBridge {
 		$areq =  $this->ntkapi->authExt($username);
 
 		if(isset($areq['uuid'])){
-			$state['notakey:uuid'] = $areq['uuid'];
-			$state['notakey:stageOneComplete'] = true;
-
-
-			$state['notakey:attr.logo_url'] = $areq['logo_url'];
-			$state['notakey:attr.logo_sash_url'] = $areq['logo_sash_url'];
-			$state['notakey:attr.created_at'] = $areq['created_at'];
-			$state['notakey:attr.expires_at'] = $areq['expires_at'];
-
-			$achain = explode('/', $areq['id']);
-			if($achain[0] == 'applications'){
-				$state['notakey:attr.guid'] = $achain[3];
-				SimpleSAML\Logger::debug("startAuth: set notakey:attr.guid {$state['notakey:attr.guid']} done" );
-			}
-
+            $this->setAuthState($state, $areq);
 			return true;
 		}
 
 
 
 		return false;
-	}
+    }
+
+    public function setAuthState(&$state, $areq){
+        $state['notakey:uuid'] = $areq['uuid'];
+        $state['notakey:stageOneComplete'] = true;
+
+
+        $state['notakey:attr.logo_url'] = $areq['logo_url'];
+        $state['notakey:attr.logo_sash_url'] = $areq['logo_sash_url'];
+        $state['notakey:attr.created_at'] = $areq['created_at'];
+        $state['notakey:attr.expires_at'] = $areq['expires_at'];
+    }
 
 	public function queryAuth($uuid) {
 		$s = $this->ntkapi->query($uuid);
