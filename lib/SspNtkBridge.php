@@ -151,7 +151,7 @@ class sspmod_notakey_SspNtkBridge {
 	}
 
 	public function getAuthId(){
-		$this->d("getAuthId is  ".$this->authId." ");
+		$this->d("getAuthId is ".$this->authId." ");
 		return $this->authId;
 	}
 
@@ -188,7 +188,7 @@ class sspmod_notakey_SspNtkBridge {
 		$state ['notakey:attr.uid'] = $res['id'];
 		$state ['notakey:attr.display_name'] = $res['full_name'];
 		$state ['notakey:attr.email'] = $res['email'];
-		$state ['notakey:attr.phone'] = $res['main_phone_number'];
+        $state ['notakey:attr.phone'] = $res['main_phone_number'];
 
 		$state ['notakey:attr.auth_id'] = $res['uuid'];
 
@@ -197,6 +197,10 @@ class sspmod_notakey_SspNtkBridge {
             $state ['notakey:attr.guid'] = $res['user_id'];
         }
 
+        // Keytoken present only in V3 API
+        if(isset($res['user_id'])){
+            $state ['notakey:attr.keytoken'] = $res['keytoken'];
+        }
 
 		SimpleSAML\Logger::info("setUser: Populated user $user / {$res['full_name']} / UUID : {$res['uuid']} attribute data" );
 

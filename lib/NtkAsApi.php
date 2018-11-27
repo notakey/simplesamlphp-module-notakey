@@ -74,8 +74,23 @@ class sspmod_notakey_NtkAsApi {
 	 *
 	 * @var string
 	 */
-	private $logger = null;
+    private $logger = null;
 
+    /**
+	 * Persistance layer using KV
+	 *
+	 * @var string
+	 */
+	private $store = null;
+
+    /**
+	 * API authentication credentials
+	 *
+	 * @var string
+	 */
+	private $api_client = null;
+
+    private $api_secret = null;
 
 	/**
 	 * Constructor for this configuration parser.
@@ -99,10 +114,32 @@ class sspmod_notakey_NtkAsApi {
 
 		if(empty($this->base_url)){
 			throw new Exception ( 'Missing URL configuration in '.$location );
-		}
+        }
 
-		$this->base_url .= 'api/v2/';
+        $this->api_client = $config->getString('client_id');
+
+        if(empty($this->api_client)){
+			throw new Exception ( 'Missing API client_id configuration in '.$location );
+        }
+
+        $this->api_secret = $config->getString('client_secret');
+
+        if(empty($this->api_secret)){
+			throw new Exception ( 'Missing API client_secret configuration in '.$location );
+        }
+
+        $this->store = \SimpleSAML\Store::getInstance();
+
+        if(is_null($this->store)){
+            throw new Exception ( 'Cannot initiate Store module');
+        }
+
+		$this->base_url .= 'api/';
 	}
+
+    private function authApi(){
+
+    }
 
 	public function auth($username, $action = '', $description = '') {
 		$p = $this->authExt($username, $action, $description);
