@@ -64,7 +64,8 @@ class sspmod_notakey_SspNtkBridge {
 			'authBackend' => 'notakey:application_id',
 			'authBackendName' => 'notakey:service_name',
 			'authCreatedOn' => 'notakey:attr.created_at',
-			'authExpiresOn' => 'notakey:attr.expires_at',
+            'authExpiresOn' => 'notakey:attr.expires_at',
+            'keyToken' => 'notakey:attr.keytoken',
 	);
 
 	/**
@@ -184,7 +185,7 @@ class sspmod_notakey_SspNtkBridge {
 				list($user, $domain) = explode('@', $res['username'], 2);
 			}
 			$state ['notakey:attr.username'] = $user;
-			$state ['notakey:attr.upn'] = $domain;
+			$state ['notakey:attr.domain'] = $domain;
 		}else{
 			$state ['notakey:attr.username'] = $res['username'];
 		}
@@ -357,8 +358,8 @@ class sspmod_notakey_SspNtkBridge {
 			$attributes[$attr] = array( $state[$st_attr] );
 		}
 
-		if(isset($state['notakey:attr.upn'])){
-			$attributes['domain'] = array( $state['notakey:attr.upn']);
+		if(isset($state['notakey:attr.domain'])){
+			$attributes['domain'] = array( $state['notakey:attr.domain']);
 		}
 
 		return $attributes;
