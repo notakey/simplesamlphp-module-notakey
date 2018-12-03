@@ -31,7 +31,7 @@ if ($state === false || !is_object($state['notakey:bridge'])) {
 
 $state['notakey:bridge']->setService($state, $service_id);
 $state['notakey:stageOneComplete'] = true;
-$state['notakey:uuid'] = $auth_uuid;
+$state['notakey:qruuid'] = $auth_uuid;
 
 $state_str = serialize($state);
 $session->setData('SimpleSAML_Auth_State', $state[SimpleSAML_Auth_State::ID], $state_str);
