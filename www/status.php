@@ -18,7 +18,7 @@ SimpleSAML\Logger::info("StateID set to $stateId");
 
 $sid = SimpleSAML_Auth_State::parseStateID($stateId);
 
-SimpleSAML\Logger::info("SID data set to ".print_r($sid, true));
+SimpleSAML\Logger::info("SID data set to ".json_encode($sid));
 
 $state = SimpleSAML_Auth_State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
 // var_dump($state);
@@ -46,14 +46,14 @@ if(!($res = $state['notakey:bridge']->queryAuth($state['notakey:uuid']))){
 	exit();
 }
 
-SimpleSAML\Logger::info("queryAuth response data set to ".print_r($res, true));
-if($res['response_type'] == 'ApproveRequest'){
+SimpleSAML\Logger::info("queryAuth response data set to ".json_encode($res));
+if(isset($res['response_type']) && $res['response_type'] == 'ApproveRequest'){
 	SimpleSAML\Logger::info("UUID {$state['notakey:uuid']} login confirmed");
 	echo 'approved';
 	exit();
 }
 
-if($res['response_type'] == 'DenyRequest'){
+if(isset($res['response_type']) && $res['response_type'] == 'DenyRequest'){
 	echo 'denied';
 	exit();
 }

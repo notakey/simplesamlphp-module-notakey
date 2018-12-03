@@ -30,7 +30,9 @@ class sspmod_notakey_SspNtkBridge {
 	 * Endpoint configuration array
 	 *
 	 */
-	private $endpoints = array ();
+    private $endpoints = array ();
+
+    private $endpoint_id = null;
 
 	/*
 	 * Warning message array
@@ -94,7 +96,9 @@ class sspmod_notakey_SspNtkBridge {
 	 *
 	 * @var string
 	 */
-	private $authId;
+    private $authId;
+
+    private $ntk_api = null;
 
 	/**
 	 * Constructor for this configuration parser.
@@ -198,7 +202,7 @@ class sspmod_notakey_SspNtkBridge {
         }
 
         // Keytoken present only in V3 API
-        if(isset($res['user_id'])){
+        if(isset($res['keytoken'])){
             $state ['notakey:attr.keytoken'] = $res['keytoken'];
         }
 
@@ -232,8 +236,9 @@ class sspmod_notakey_SspNtkBridge {
 
 		if (is_null ( $endpoint_id ) ){
 			if ( isset ( $state ['notakey:service_id'] ) && isset ( $this->endpoints [$state ['notakey:service_id']] )) {
-				SimpleSAML\Logger::info("setService: Backend {$this->endpoints[$state['notakey:service_id']]['name']} ({$state['notakey:service_id']}) selected" );
-				return $this->loadNtkApi($state ['notakey:service_id']);
+                SimpleSAML\Logger::info("setService: Backend {$this->endpoints[$state['notakey:service_id']]['name']} ({$state['notakey:service_id']}) selected" );
+                $this->endpoint_id = $state ['notakey:service_id'];
+				return true;
 			}
 
 			throw new SimpleSAML_Error_Exception ( 'Invalid session state.' );
@@ -244,9 +249,9 @@ class sspmod_notakey_SspNtkBridge {
 			SimpleSAML\Logger::info("setService: Service ID $endpoint_id undefined" );
 			throw new SimpleSAML_Error_Exception ( 'Please select your service provider.' );
 			return false;
-		}
+        }
 
-		$this->loadNtkApi($endpoint_id);
+        $this->endpoint_id = $endpoint_id;
 
 		SimpleSAML\Logger::info("setService: New backend {$this->endpoints[$endpoint_id]['name']} ($endpoint_id) selected" );
 
@@ -291,7 +296,7 @@ class sspmod_notakey_SspNtkBridge {
 	public function startAuth($username, &$state, $remember = '') {
 		$this->setRememberCookie($username, $remember);
 
-		$areq =  $this->ntkapi->authExt($username);
+		$areq =  $this->ntkapi()->authExt($username);
 
 		if(isset($areq['uuid'])){
             $this->setAuthState($state, $areq);
@@ -306,22 +311,18 @@ class sspmod_notakey_SspNtkBridge {
     public function setAuthState(&$state, $areq){
         $state['notakey:uuid'] = $areq['uuid'];
         $state['notakey:stageOneComplete'] = true;
-
-
-        $state['notakey:attr.logo_url'] = $areq['logo_url'];
-        $state['notakey:attr.logo_sash_url'] = $areq['logo_sash_url'];
         $state['notakey:attr.created_at'] = $areq['created_at'];
         $state['notakey:attr.expires_at'] = $areq['expires_at'];
     }
 
 	public function queryAuth($uuid) {
-		$s = $this->ntkapi->query($uuid);
+		$s = $this->ntkapi()->query($uuid);
 
 		return $s;
-	}
+    }
 
 	private function checkApiAccess(&$state) {
-		$res = $this->ntkapi->serviceName();
+		$res = $this->ntkapi()->serviceName($state);
 
 		if ($res) {
 			SimpleSAML\Logger::info("checkApiAccess: Connectivity to $res verified" );
@@ -363,21 +364,25 @@ class sspmod_notakey_SspNtkBridge {
 		return $attributes;
 	}
 
-	private function loadNtkApi($endpoint_id){
+	private function ntkapi(){
 
-		if(empty($this->endpoints[$endpoint_id]['url']) || empty($this->endpoints[$endpoint_id]['service_id'])){
+        if($this->ntk_api){
+            return $this->ntk_api;
+        }
+
+		if(empty($this->endpoints[$this->endpoint_id]['url']) || empty($this->endpoints[$this->endpoint_id]['service_id'])){
 			throw new SimpleSAML_Error_Exception('Missing or invalid API endpoint configuration, check authsources.php.' );
 		}
 
 		$className = SimpleSAML\Module::resolveClass( 'sspmod_notakey_NtkAsApi', 'NtkAsApi');
 
-		$this->ntkapi = new $className($this->endpoints[$endpoint_id], 'sspmod_notakey_SspNtkBridge::loadNtkApi');
+		$this->ntk_api = new $className($this->endpoints[$this->endpoint_id], 'sspmod_notakey_SspNtkBridge::loadNtkApi');
 
-		$this->ntkapi->setLogger('sspmod_notakey_SspNtkBridge::l');
+		$this->ntk_api->setLogger('sspmod_notakey_SspNtkBridge::l');
 
-		$this->ntkapi->setServiceId($this->endpoints[$endpoint_id]['service_id']);
+		$this->ntk_api->setServiceId($this->endpoints[$this->endpoint_id]['service_id']);
 
-		return true;
+		return $this->ntk_api;
 	}
 
 	public static function d($msg) {
@@ -388,7 +393,17 @@ class sspmod_notakey_SspNtkBridge {
 
 	public static function l($msg) {
 		SimpleSAML\Logger::info($msg);
-	}
+    }
+
+    public function __sleep()
+    {
+        return array('endpoint_id', 'debug',  'authId', 'stripdomain', 'endpoints', 'uid_attr', 'rememberMeEnabled', 'rememberMeChecked');
+    }
+
+    public function __wakeup()
+    {
+
+    }
 
 }
 

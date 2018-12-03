@@ -25,7 +25,7 @@ $stateId = urldecode($_REQUEST['State']);
 
 $sid = SimpleSAML_Auth_State::parseStateID($stateId);
 
-SimpleSAML\Logger::info("SID data set to ".print_r($sid, true));
+SimpleSAML\Logger::info("SID data set to ".json_encode($sid));
 
 if (!is_null($sid['url'])) {
 	SimpleSAML\Utils\HTTP::checkURLAllowed($sid['url']);
@@ -49,7 +49,7 @@ if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete
 	SimpleSAML\Logger::info("Querying API for response status");
 	if($res = $state['notakey:bridge']->queryAuth($state['notakey:uuid'])){
 		// SimpleSAML\Logger::info("queryAuthApi response data set to ".print_r($res, true));
-		if($res['response_type'] == 'ApproveRequest'){
+		if(isset($res['response_type']) && $res['response_type'] == 'ApproveRequest'){
 			SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} login OK");
 
 			$state['notakey:bridge']->setUser($state, $res);
@@ -58,7 +58,7 @@ if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete
 			$authstate = 'success';
 		}
 
-		if($res['response_type'] == 'DenyRequest'){
+		if(isset($res['response_type']) && $res['response_type'] == 'DenyRequest'){
 			SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} denied login");
 			$warning_messages[] = 'Authentication request denied by user, please try again.';
 			$state['notakey:stageOneComplete'] = false;

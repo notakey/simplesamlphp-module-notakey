@@ -19,7 +19,7 @@ SimpleSAML\Logger::info("StateID set to $stateId");
 
 $sid = SimpleSAML_Auth_State::parseStateID($stateId);
 
-SimpleSAML\Logger::info("SID data set to ".print_r($sid, true));
+SimpleSAML\Logger::info("SID data set to ".json_encode($sid));
 
 $state = SimpleSAML_Auth_State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
 //var_dump($state);
