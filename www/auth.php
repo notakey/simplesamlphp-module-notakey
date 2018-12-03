@@ -65,7 +65,7 @@ if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete
 			$authstate = 'denied';
 		}
 
-		if($res['expired'] == '1'){
+		if($res['expired']){
 			SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} expired");
 			$warning_messages[] = 'Authentication procedure expired, please try again.';
 			$state['notakey:stageOneComplete'] = false;

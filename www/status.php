@@ -58,7 +58,7 @@ if(isset($res['response_type']) && $res['response_type'] == 'DenyRequest'){
 	exit();
 }
 
-if($res['expired'] == '1'){
+if($res['expired']){
 	echo 'expired';
 	exit();
 }
