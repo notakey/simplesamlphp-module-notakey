@@ -126,11 +126,11 @@ class sspmod_notakey_NtkAsApi {
 			throw new Exception ( 'Missing API client_secret configuration in '.$location );
         }
 
-        // $this->store = \SimpleSAML\Store::getInstance();
+        $this->store = \SimpleSAML\Store::getInstance();
 
-        // if(is_null($this->store)){
-        //     throw new Exception ( 'Cannot initiate Store module');
-        // }
+        if(is_null($this->store)){
+            throw new Exception ( 'Cannot initiate Store module');
+        }
 	}
 
 	public function auth($username, $action = '', $description = '') {
@@ -249,7 +249,7 @@ class sspmod_notakey_NtkAsApi {
 		return $s;
     }
 
-    private function getAccessToken(){
+    private function acquireAccessToken(){
         // curl --request POST \
         // --url https://{nas}/api/token \
         // --header 'accept: application/json' \
@@ -286,7 +286,23 @@ class sspmod_notakey_NtkAsApi {
         return $this->saveAccessToken($res);
     }
 
+    private function getAccessToken(){
+        if($this->_accessToken && $this->_accessTokenExpires){
+            return;
+        }
+        try{
+            $token = $this->store->get('ntk_access_token', md5($this->base_url));
+            if($token){
+                list($this->_accessToken, $this->_accessTokenExpires) = unserialize($token);
+            }
+        }catch(Exception $ex){
+            $this->l("getAccessToken no valid token found: ".$ex->getMessage());
+        }
+
+    }
+
     private function getAccessTokenHeader(){
+        $this->getAccessToken();
         return array("Authorization" => "Bearer ".$this->_accessToken);
     }
 
@@ -297,10 +313,21 @@ class sspmod_notakey_NtkAsApi {
         }
         $this->_accessToken = $token_arr->access_token;
         $this->_accessTokenExpires = $token_arr->created_at+$token_arr->expires_in;
+
+        if($this->_accessTokenExpires < time()){
+            throw new Exception ( 'Authentication server call failed, failed to secure connection' );
+			return false;
+        }
+
+        $this->store->set('ntk_access_token', md5($this->base_url), serialize([$this->_accessToken, $this->_accessTokenExpires]), $this->_accessTokenExpires);
+
+        $this->l("saveAccessToken saved token, expires: ".date("H:i:s", $this->_accessTokenExpires));
+
         return true;
     }
 
     private function accessTokenValid(){
+        $this->getAccessToken();
         if(time() > $this->_accessTokenExpires){
             return false;
         }
@@ -310,7 +337,7 @@ class sspmod_notakey_NtkAsApi {
 
     private function callAuthenticatedApi($method, $mode = 'GET', $params = null){
         if(!$this->accessTokenValid()){
-            $this->getAccessToken();
+            $this->acquireAccessToken();
         }
 
         return $this->callApi($method, $mode, $params, $this->getAccessTokenHeader());

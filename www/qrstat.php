@@ -39,7 +39,7 @@ if(!($res = $state['notakey:bridge']->queryAuth($state['notakey:qruuid']))){
 
 SimpleSAML\Logger::info("queryAuth response data set to ".print_r($res, true));
 if(isset($res['response_type']) && $res['response_type'] == 'ApproveRequest'){
-    SimpleSAML\Logger::info("UUID {$state['notakey:uuid']} login confirmed");
+    SimpleSAML\Logger::info("UUID {$state['notakey:qruuid']} login confirmed");
     $state['notakey:bridge']->setAuthState($state, $res);
     $state['notakey:bridge']->setUser($state, $res);
 
