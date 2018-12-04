@@ -39,7 +39,7 @@ $state['notakey:stageOneComplete'] = (isset($state['notakey:stageOneComplete']))
 $username = $state['notakey:bridge']->getRememberUsername();
 
 // Username has been submitted
-if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete']) {
+if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete'] && isset($state['notakey:uuid'])) {
 	try {
 		$state['notakey:bridge']->setService($state);
 	} catch (Exception $e){
