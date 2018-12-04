@@ -25,19 +25,20 @@ $state = SimpleSAML_Auth_State::loadState($stateId, sspmod_notakey_SspNtkBridge:
 //var_dump($state);
 
 if(!isset($state['notakey:qruuid'])){
-    sleep(1);
-    SimpleSAML\Logger::info("No UUID in state");
+    sleep(2);
+    SimpleSAML\Logger::debug("No UUID in state");
 	echo 'noop';
 	exit();
 }
 
 if(!($res = $state['notakey:bridge']->queryAuth($state['notakey:qruuid']))){
-	sleep(1);
-	echo 'error';
+	sleep(5);
+    echo 'error';
+    SimpleSAML\Logger::error("Unable to query auth UUID {$state['notakey:qruuid']}");
 	exit();
 }
 
-SimpleSAML\Logger::info("queryAuth response data set to ".print_r($res, true));
+SimpleSAML\Logger::info("queryAuth response data set to ".json_encode($res, true));
 if(isset($res['response_type']) && $res['response_type'] == 'ApproveRequest'){
     SimpleSAML\Logger::info("UUID {$state['notakey:qruuid']} login confirmed");
     $state['notakey:bridge']->setAuthState($state, $res);
@@ -50,14 +51,16 @@ if(isset($res['response_type']) && $res['response_type'] == 'ApproveRequest'){
 }
 
 if(isset($res['response_type']) && $res['response_type'] == 'DenyRequest'){
-	echo 'denied';
+    echo 'denied';
+    SimpleSAML\Logger::info("UUID {$state['notakey:qruuid']} login denied");
 	exit();
 }
 
 if($res['expired']){
-	echo 'expired';
+    echo 'expired';
+    SimpleSAML\Logger::info("UUID {$state['notakey:qruuid']} login expired");
 	exit();
 }
 
 echo 'noop';
-sleep(1);
+sleep(2);
