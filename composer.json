@@ -2,17 +2,17 @@
     "name": "notakey/simplesamlphp-module-notakey",
     "description": "A SimpleSAMLphp module adding support for Notakey 2FA with mobile app.",
     "type": "simplesamlphp-module",
-    "keywords": [ "notakey", "2fa" ],
+    "keywords": ["notakey", "2fa"],
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Ingemars Asmanis",
-            "email": "ingemars.asmanis@notakey.com"
-        }
-    ],
+    "authors": [{
+        "name": "Ingemars Asmanis",
+        "email": "ingemars.asmanis@notakey.com"
+    }],
     "require": {
         "php": ">=5.5.9",
-        "simplesamlphp/composer-module-installer": "^1.0"
+        "simplesamlphp/composer-module-installer": "^1.0",
+        "nategood/httpful": "^0.2.20",
+        "mobiledetect/mobiledetectlib": "^2.8"
     },
     "extra": {
         "branch-alias": {

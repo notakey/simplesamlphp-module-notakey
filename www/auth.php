@@ -25,7 +25,7 @@ $stateId = urldecode($_REQUEST['State']);
 
 $sid = SimpleSAML_Auth_State::parseStateID($stateId);
 
-SimpleSAML\Logger::info("SID data set to ".print_r($sid, true));
+SimpleSAML\Logger::info("SID data set to ".json_encode($sid));
 
 if (!is_null($sid['url'])) {
 	SimpleSAML\Utils\HTTP::checkURLAllowed($sid['url']);
@@ -39,7 +39,7 @@ $state['notakey:stageOneComplete'] = (isset($state['notakey:stageOneComplete']))
 $username = $state['notakey:bridge']->getRememberUsername();
 
 // Username has been submitted
-if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete']) {
+if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete'] && isset($state['notakey:uuid'])) {
 	try {
 		$state['notakey:bridge']->setService($state);
 	} catch (Exception $e){
@@ -49,7 +49,7 @@ if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete
 	SimpleSAML\Logger::info("Querying API for response status");
 	if($res = $state['notakey:bridge']->queryAuth($state['notakey:uuid'])){
 		// SimpleSAML\Logger::info("queryAuthApi response data set to ".print_r($res, true));
-		if($res['response_type'] == 'ApproveRequest'){
+		if(isset($res['response_type']) && $res['response_type'] == 'ApproveRequest'){
 			SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} login OK");
 
 			$state['notakey:bridge']->setUser($state, $res);
@@ -58,14 +58,14 @@ if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete
 			$authstate = 'success';
 		}
 
-		if($res['response_type'] == 'DenyRequest'){
+		if(isset($res['response_type']) && $res['response_type'] == 'DenyRequest'){
 			SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} denied login");
 			$warning_messages[] = 'Authentication request denied by user, please try again.';
 			$state['notakey:stageOneComplete'] = false;
 			$authstate = 'denied';
 		}
 
-		if($res['expired'] == '1'){
+		if($res['expired']){
 			SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} expired");
 			$warning_messages[] = 'Authentication procedure expired, please try again.';
 			$state['notakey:stageOneComplete'] = false;
@@ -137,8 +137,31 @@ $t->data['jquery'] = array('core' => TRUE, 'ui' => TRUE, 'css' => TRUE);
 
 $base_url = SimpleSAML\Utils\HTTP::getBaseURL();
 
+$t->data['js_qr_check'] = '<script type="text/javascript">
+
+    function getQrAuthProgress(){
+        $.ajax({
+            url: \''.$base_url.'module/notakey/qrstat?State='.urlencode($stateId).'&service_id=0\',
+            success: function(data) {
+                // $("#progress").html(data);
+                if(data == "approved" || data == "denied" || data == "expired") {
+                    location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
+                        return;
+                }
+                getQrAuthProgress();
+            },
+            error: function (err) {
+                console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
+                location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
+            }
+        });
+    }
+
+    getQrAuthProgress();
+</script>';
+
 if($state['notakey:stageOneComplete']){
-		$t->data['js_block'] = '<script type="text/javascript">
+		$t->data['js_block'] = $t->data['js_block'].'<script type="text/javascript">
 
 		    function getProgress(){
 		        $.ajax({
@@ -170,6 +193,7 @@ $t->data['service_list'] = $state['notakey:bridge']->getServices();
 $t->data['warning_messages'] = $warning_messages;
 $t->data['sel_service'] = $service_id;
 $t->data['sel_user'] = $username;
+$t->data['qr_link'] = $base_url."module/notakey/qr?State=".urlencode($stateId)."&service_id=0";
 
 if (array_key_exists('forcedUsername', $state)) {
 	$t->data['sel_user'] = $state['forcedUsername'];

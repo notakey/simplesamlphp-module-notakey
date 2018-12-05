@@ -18,8 +18,6 @@ if (!class_exists($classname)){
 }
 */
 
-include (dirname ( __FILE__ ) . '/httpful.phar');
-
 class sspmod_notakey_NtkAsApi {
 
 	/**
@@ -34,7 +32,7 @@ class sspmod_notakey_NtkAsApi {
 	 *
 	 * @var array
 	 */
-	private $base_url = array ();
+	private $base_url = '';
 
 	/**
 	 * Reference to API instance
@@ -57,12 +55,6 @@ class sspmod_notakey_NtkAsApi {
 	 */
 	private $user = '';
 
-	/**
-	 * Auth request UUID placeholder
-	 *
-	 * @var string
-	 */
-	private $uuid = '';
 
 	/**
 	 * Auth backend service identifier
@@ -76,8 +68,27 @@ class sspmod_notakey_NtkAsApi {
 	 *
 	 * @var string
 	 */
-	private $logger = null;
+    private $logger = null;
 
+    /**
+	 * Persistance layer using KV
+	 *
+	 * @var string
+	 */
+	private $store = null;
+
+    /**
+	 * API authentication credentials
+	 *
+	 * @var string
+	 */
+	private $api_client = null;
+
+    private $api_secret = null;
+
+    private $_accessToken= null;
+
+    private $_accessTokenExpires = null;
 
 	/**
 	 * Constructor for this configuration parser.
@@ -97,13 +108,29 @@ class sspmod_notakey_NtkAsApi {
 		$config = SimpleSAML_Configuration::loadFromArray($config, $location);
 		$this->debug = $config->getBoolean('debug', FALSE);
 
-		$this->base_url = $config->getString('url');
+		$this->base_url = $this->trimUrl($config->getString('url'));
 
 		if(empty($this->base_url)){
 			throw new Exception ( 'Missing URL configuration in '.$location );
-		}
+        }
 
-		$this->base_url .= 'api/v2/';
+        $this->api_client = $config->getString('client_id');
+
+        if(empty($this->api_client)){
+			throw new Exception ( 'Missing API client_id configuration in '.$location );
+        }
+
+        $this->api_secret = $config->getString('client_secret');
+
+        if(empty($this->api_secret)){
+			throw new Exception ( 'Missing API client_secret configuration in '.$location );
+        }
+
+        $this->store = \SimpleSAML\Store::getInstance();
+
+        if(is_null($this->store)){
+            throw new Exception ( 'Cannot initiate Store module');
+        }
 	}
 
 	public function auth($username, $action = '', $description = '') {
@@ -120,14 +147,13 @@ class sspmod_notakey_NtkAsApi {
 
 			if (isset ( $p['uuid'] )) {
 				$this->l ( "Login for user $username sent OK" );
-				$this->uuid = $p['uuid'];
 				return $p['uuid'];
 			}
 		}
 
 		$this->l ( "Login request for user $username failed" );
 		return false;
-	}
+    }
 
 	public function authExt($username, $action = '', $description = '') {
 		$domain = '';
@@ -144,11 +170,10 @@ class sspmod_notakey_NtkAsApi {
 				array ()
 		);
 
-		$method = 'auth_request';
-
 		$p = array (
-				'action' => 'Confirm login',
-				'description' => 'Log in as '.$username.'?'
+            'action' => sspmod_notakey_SspNtkBridge::auth_action,
+            'description' => sprintf(sspmod_notakey_SspNtkBridge::auth_description, $username),
+            'username' => $username,
 		);
 
 		if(!empty($action)){
@@ -159,7 +184,7 @@ class sspmod_notakey_NtkAsApi {
 			$p['description'] = str_replace(array('{}'), $username, $description);
 		}
 
-		$res = $this->callApi ( '/application_user/' . $username . '/' . $method . '/', 'POST', $p );
+		$res = $this->callAuthenticatedApi ('auth', 'POST', $p );
 
 		// $this->l(print_r($res, true));
 
@@ -180,12 +205,12 @@ class sspmod_notakey_NtkAsApi {
 
 		$this->service_id = $service_id;
 
-		$this->api = $this->base_url.'application/'.$service_id;
+		$this->api = $this->trimUrl($this->base_url.'/api/v3/services/'.$service_id);
 		return true;
 	}
 
 	public function serviceName(){
-		$res = $this->callApi ( '/', 'GET' );
+		$res = $this->callAuthenticatedApi ( '', 'GET' );
 
 		if (isset ( $res->id ) && isset($res->display_name)) {
 			$this->l ( "serviceName: Connectivity to $res->id / $res->display_name verified" );
@@ -193,7 +218,11 @@ class sspmod_notakey_NtkAsApi {
 		}
 
 		return false;
-	}
+    }
+
+    private function trimUrl($url){
+        return rtrim($url,"/ \t\n\r\0");
+    }
 
 	public function query($uuid) {
 
@@ -201,7 +230,7 @@ class sspmod_notakey_NtkAsApi {
 			throw new Exception ( 'Invalid authentication state, cannot verify session.' );
 		}
 
-		$res = $this->callApi ( '/auth_request/' . $uuid , 'GET' );
+		$res = $this->callAuthenticatedApi ( 'auth/' . $uuid , 'GET' );
 
 		if ($res) {
 			return (array) $res;
@@ -218,23 +247,121 @@ class sspmod_notakey_NtkAsApi {
 		$s = json_encode ( $p );
 		// $this->l("serializeApiParams: $s");
 		return $s;
-	}
+    }
 
-	private function callApi($method, $mode = 'GET', $params = NULL) {
+    private function acquireAccessToken(){
+        // curl --request POST \
+        // --url https://{nas}/api/token \
+        // --header 'accept: application/json' \
+        // --header 'authorization: Basic MG9hY...' \
+        // --header 'cache-control: no-cache' \
+        // --header 'content-type: application/x-www-form-urlencoded' \
+        // --data 'grant_type=client_credentials&redirect_uri=http%3A%2F%2Flocalhost%3A8080&
+        // scope=customScope'
+
+        if($this->accessTokenValid()){
+            return true;
+        }
+
+        $p = [
+            'grant_type' => 'client_credentials',
+            'client_id' => $this->api_client,
+            'client_secret' => $this->api_secret,
+        ];
+
+        $h = [
+            'Authorization: Basic '.base64_encode($this->api_client.':'.$this->api_secret)
+        ];
+
+        $res = $this->callProtoApi ( $this->base_url.'/api/token', 'POST', $p, $h);
+
+		// $this->l(print_r($res, true));
+
+		if (!$res) {
+			$this->l ( "Api authentication failed" );
+			throw new Exception ( 'Authentication server call failed, authentication procedure failed' );
+			return false;
+		}
+
+        return $this->saveAccessToken($res);
+    }
+
+    private function getAccessToken(){
+        if($this->_accessToken && $this->_accessTokenExpires){
+            return;
+        }
+        try{
+            $token = $this->store->get('ntk_access_token', md5($this->base_url));
+            if($token){
+                list($this->_accessToken, $this->_accessTokenExpires) = unserialize($token);
+            }
+        }catch(Exception $ex){
+            $this->l("getAccessToken no valid token found: ".$ex->getMessage());
+        }
+
+    }
+
+    private function getAccessTokenHeader(){
+        $this->getAccessToken();
+        return array("Authorization" => "Bearer ".$this->_accessToken);
+    }
+
+    private function saveAccessToken($token_arr){
+        if(empty($token_arr->access_token) || $token_arr->created_at == 0 || $token_arr->expires_in == 0){
+            throw new Exception ( 'Authentication server call failed, failed to secure connection' );
+			return false;
+        }
+        $this->_accessToken = $token_arr->access_token;
+        $this->_accessTokenExpires = $token_arr->created_at+$token_arr->expires_in;
+
+        if($this->_accessTokenExpires < time()){
+            throw new Exception ( 'Authentication server call failed, failed to secure connection' );
+			return false;
+        }
+
+        $this->store->set('ntk_access_token', md5($this->base_url), serialize([$this->_accessToken, $this->_accessTokenExpires]), $this->_accessTokenExpires);
+
+        $this->l("saveAccessToken saved token, expires: ".date("H:i:s", $this->_accessTokenExpires));
+
+        return true;
+    }
+
+    private function accessTokenValid(){
+        $this->getAccessToken();
+        if(time() > $this->_accessTokenExpires){
+            return false;
+        }
+
+        return true;
+    }
+
+    private function callAuthenticatedApi($method, $mode = 'GET', $params = null){
+        if(!$this->accessTokenValid()){
+            $this->acquireAccessToken();
+        }
+
+        return $this->callApi($method, $mode, $params, $this->getAccessTokenHeader());
+    }
+
+    private function callApi($method, $mode = 'GET', $params = null, $headers = array()){
+        return $this->callProtoApi($this->trimUrl($this->api) .($method == '' ? '' : '/'.$method), $mode, $params, $headers);
+    }
+
+	private function callProtoApi($url, $mode = 'GET', $params = null, $headers = array()) {
 		if ($mode == 'GET') {
 			try {
-				$response = \Httpful\Request::get ( $this->api . $method )->expectsJson ()->send ();
+				$response = \Httpful\Request::get ( $url )->addHeaders($headers)->expectsJson ()->send ();
 			} catch ( Exception $e ) {
-				$this->l ( "callApi: GET $method exception caught" );
+				$this->l ( "callApi: GET $url exception caught" );
 				return false;
 			}
 		}
 
 		if ($mode == 'POST') {
 			try {
-				$response = \Httpful\Request::post ( $this->api . $method )->sendsJson ()->expectsJson ()->body ( $this->serializeApiParams ( $params ) )->send ();
+				$response = \Httpful\Request::post ( $url )->addHeaders($headers)->sendsJson ()->expectsJson ()->body ( $this->serializeApiParams ( $params ) )->send ();
 			} catch ( Exception $e ) {
-				$this->l ( "callApi: POST $method exception caught" );
+				$this->l ( "callApi: POST $url exception caught" );
 				return false;
 			}
 		}
@@ -247,7 +374,7 @@ class sspmod_notakey_NtkAsApi {
 			//TODO
 		}
 
-		$this->l ( "callApi: $method returned code $response->code" );
+		$this->l ( "callApi: $url returned code $response->code" );
 		if ($response->code >= 200 && $response->code < 300) {
 			return $response->body;
 		}
@@ -255,7 +382,7 @@ class sspmod_notakey_NtkAsApi {
 		return false;
 	}
 
-	public function setLogger($callback 	) {
+	public function setLogger($callback) {
 		$this->logger = $callback;
 	}
 
@@ -264,13 +391,13 @@ class sspmod_notakey_NtkAsApi {
 			call_user_func($this->logger, $msg);
 	}
 
-	private function getServiceAppID(&$state, $service) {
-		$apr = explode ( '/', $this->endpoints [$service] ['api'] );
+	private function getServiceAppID(&$state, $service_id) {
+		$apr = explode ( '/', $this->endpoints[$service_id]['api'] );
 		return array_pop ( $apr );
 	}
 
 	private function checkApiAccess(&$state) {
-		$res = $this->callApi ( '/', 'GET' );
+		$res = $this->callAuthenticatedApi('', 'GET' );
 
 		$ret = false;
 		if (isset ( $res->id )) {
