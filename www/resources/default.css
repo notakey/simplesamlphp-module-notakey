@@ -3090,10 +3090,11 @@ select.form-control-lg:not([size]):not([multiple]),
     }
 }
 
-.btn {
+.button {
     display: inline-block;
     font-weight: normal;
     line-height: 1.25;
+    color: black;
     text-align: center;
     white-space: nowrap;
     vertical-align: middle;
@@ -3106,6 +3107,87 @@ select.form-control-lg:not([size]):not([multiple]),
     border-radius: 0.25rem;
     transition: all 0.2s ease-in-out;
     background: #d3d3d3b5;
+    margin-bottom: 0.5rem;
+}
+
+.button:focus,
+.button:hover {
+    text-decoration: none;
+}
+
+.button:focus,
+.button.focus {
+    outline: 0;
+    box-shadow: 0 0 0 2px rgba(2, 117, 216, 0.25);
+}
+
+.button.disabled,
+.button:disabled {
+    cursor: not-allowed;
+    opacity: .65;
+}
+
+.button:active,
+.button.active {
+    background-image: none;
+}
+
+a.button.disabled,
+fieldset[disabled] a.btn {
+    pointer-events: none;
+}
+
+.container table {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.container table tr th {
+    text-align: right;
+    vertical-align: top;
+    padding-right: .6em;
+    font-weight: normal;
+    font-size: 110%;
+}
+
+.container table tr td {
+    text-align: left;
+    padding: 0px;
+    /* width: 40%; */
+}
+
+.container table tr td.header {
+    padding-left: 5px;
+    padding-top: 8px;
+    font-size: 110%;
+}
+
+.container table tr td [type=text],
+.container table tr td textarea {
+    width: 90%;
+    border: 1px solid #bbb;
+    margin: 2px 5px;
+    padding: 2px 4px;
+}
+
+.btn {
+    display: inline-block;
+    font-weight: normal;
+    line-height: 1.25;
+    color: black;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease-in-out;
+    background: #d3d3d3b5;
+    margin-bottom: 0.5rem;
 }
 
 .btn:focus,
@@ -4476,7 +4558,6 @@ table.modules tr.even td {
 
 table.attributes {
     width: 100%;
-    margin: 0px;
     border: 1px solid #bbb;
     border-collapse: collapse;
 }
