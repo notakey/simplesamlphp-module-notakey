@@ -81,7 +81,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
                         <!--  <?php echo $this->t('{notakey:notakey:please_enter_username}') ?> -->
                         <td style="padding: .3em;"><?php echo $this->t('{login:username}'); ?></td>
                         <td><input type="text" value="<?php echo htmlspecialchars(isset($this->data['sel_user']))?$this->data['sel_user']:''; ?>" name="username" id="username" placeholder="" tabindex="1" maxlength="100"></td>
-                        <td style="padding: .4em;"><input type="submit" id="regularsubmit" tabindex="3" value="<?php echo $this->t('{login:login_button}'); ?>" /></td>
+                        <td style="padding: .4em;"><input type="button" id="regularsubmit" tabindex="3" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='Processing...'; this.disabled=true; this.form.submit(); return true;" /></td>
                     </tr>
                     <?php
                     if ($this->data['rememberMeEnabled']) {
@@ -102,7 +102,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
                     ?>
                     <tr>
                         <td></td>
-                        <td><input type="submit" tabindex="5" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" /></td>
+                        <td><input type="button" tabindex="5" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='Processing...'; this.disabled=true; this.form.submit(); return true;" /></td>
                         <td></td>
                     </tr>
                 </tbody>

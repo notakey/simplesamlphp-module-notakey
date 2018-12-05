@@ -3090,53 +3090,6 @@ select.form-control-lg:not([size]):not([multiple]),
     }
 }
 
-.button {
-    display: inline-block;
-    font-weight: normal;
-    line-height: 1.25;
-    color: black;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border-radius: 0.25rem;
-    transition: all 0.2s ease-in-out;
-    background: #d3d3d3b5;
-    margin-bottom: 0.5rem;
-}
-
-.button:focus,
-.button:hover {
-    text-decoration: none;
-}
-
-.button:focus,
-.button.focus {
-    outline: 0;
-    box-shadow: 0 0 0 2px rgba(2, 117, 216, 0.25);
-}
-
-.button.disabled,
-.button:disabled {
-    cursor: not-allowed;
-    opacity: .65;
-}
-
-.button:active,
-.button.active {
-    background-image: none;
-}
-
-a.button.disabled,
-fieldset[disabled] a.btn {
-    pointer-events: none;
-}
-
 .container table {
     width: 100%;
     margin-bottom: 1rem;
@@ -3163,13 +3116,14 @@ fieldset[disabled] a.btn {
 }
 
 .container table tr td [type=text],
+.container table tr td [type=password],
 .container table tr td textarea {
-    width: 90%;
     border: 1px solid #bbb;
     margin: 2px 5px;
     padding: 2px 4px;
 }
 
+.button,
 .btn {
     display: inline-block;
     font-weight: normal;
@@ -3190,28 +3144,37 @@ fieldset[disabled] a.btn {
     margin-bottom: 0.5rem;
 }
 
+.button:hover,
+.button:focus,
 .btn:focus,
 .btn:hover {
     text-decoration: none;
 }
 
+.button:focus,
+.button.focus,
 .btn:focus,
 .btn.focus {
     outline: 0;
     box-shadow: 0 0 0 2px rgba(2, 117, 216, 0.25);
 }
 
+.button:disabled,
+.button.disabled,
 .btn.disabled,
 .btn:disabled {
     cursor: not-allowed;
     opacity: .65;
 }
 
+.button:active,
+.button.active,
 .btn:active,
 .btn.active {
     background-image: none;
 }
 
+a.button.disabled,
 a.btn.disabled,
 fieldset[disabled] a.btn {
     pointer-events: none;
