@@ -8,6 +8,7 @@ $stateId = urldecode($_REQUEST['State']);
 $service_id = intval($_REQUEST['service_id']);
 
 $state = SimpleSAML_Auth_State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
+$endpoint = $state['notakey:bridge']->setService($state, $service_id);
 $endpoint = $state['notakey:bridge']->getService($service_id);
 
 $query = array();
@@ -26,7 +27,7 @@ assert('!is_null($$session)');
 $query['s'] = $service_id.':'.$state_id.':'.$session->getSessionId();
 
 $query['m'] = sspmod_notakey_SspNtkBridge::auth_action;
-$query['d'] = "Proceed with login to ".$endpoint['name'].'?';
+$query['d'] = $state['notakey:bridge']->parseAuthMessage("Proceed with login to ".$endpoint['name'].'?');
 $query['t'] = 600;
 
 // var_dump($session);

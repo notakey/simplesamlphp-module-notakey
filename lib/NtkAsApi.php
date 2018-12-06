@@ -155,6 +155,10 @@ class sspmod_notakey_NtkAsApi {
 		return false;
     }
 
+    public function parseAuthMessage($m){
+        return str_replace(array("\n", "\r", "\0", "\t"), '', $m);
+    }
+
 	public function authExt($username, $action = '', $description = '') {
 		$domain = '';
 
@@ -172,16 +176,16 @@ class sspmod_notakey_NtkAsApi {
 
 		$p = array (
             'action' => sspmod_notakey_SspNtkBridge::auth_action,
-            'description' => sprintf(sspmod_notakey_SspNtkBridge::auth_description, $username),
+            'description' => $this->parseAuthMessage(sprintf(sspmod_notakey_SspNtkBridge::auth_description, $username)),
             'username' => $username,
 		);
 
 		if(!empty($action)){
-			$p['action'] = str_replace(array('{}'), $username, $action);
+			$p['action'] = $this->parseAuthMessage(str_replace(array('{}'), $username, $action));
 		}
 
 		if(!empty($description)){
-			$p['description'] = str_replace(array('{}'), $username, $description);
+			$p['description'] = $this->parseAuthMessage(str_replace(array('{}'), $username, $description));
 		}
 
 		$res = $this->callAuthenticatedApi ('auth', 'POST', $p );

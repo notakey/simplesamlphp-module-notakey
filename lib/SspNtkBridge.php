@@ -225,7 +225,11 @@ class sspmod_notakey_SspNtkBridge {
         }
 
 		return $this->endpoints[$endpoint_id];
-	}
+    }
+
+    public function parseAuthMessage($m){
+        return $this->ntkapi()->parseAuthMessage($m);
+    }
 
 	public function setService(&$state, $endpoint_id = null) {
 		if (count ( $this->endpoints ) == 0) {
