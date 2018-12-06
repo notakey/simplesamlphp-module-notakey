@@ -1,6 +1,6 @@
 {
     "name": "notakey/simplesamlphp-module-notakey",
-    "description": "A SimpleSAMLphp module adding support for Notakey 2FA with mobile app.",
+    "description": "A SimpleSAMLphp module adding support for Notakey multi factor authentication with free mobile app.",
     "type": "simplesamlphp-module",
     "keywords": ["notakey", "2fa"],
     "license": "MIT",
