@@ -32,7 +32,7 @@ if ($this->data['errorcode'] !== null) {
     <p class="logintext"><?php echo $this->t('{login:user_pass_text}'); ?></p>
 
     <form action="?" method="post" name="f">
-        <table>
+        <table style="width: auto;">
             <tr>
                 <td rowspan="2" class="loginicon" style="width:30%">
                     <img alt="" style="float: right; margin-right: 2rem; " src="/<?php echo $this->data['baseurlpath']; ?>resources/icons/experience/gtk-dialog-authentication.48x48.png" />
