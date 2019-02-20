@@ -148,7 +148,7 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
                     location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
                         return;
                 }
-                getQrAuthProgress();
+                setTimeout(getQrAuthProgress(), 3000);
             },
             error: function (err) {
                 console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
@@ -157,7 +157,7 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
         });
     }
 
-    getQrAuthProgress();
+    setTimeout(getQrAuthProgress(), 3000);
 </script>';
 
 if($state['notakey:stageOneComplete']){
@@ -172,7 +172,7 @@ if($state['notakey:stageOneComplete']){
 		                	location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
 		                  	return;
 		                }
-		               	getProgress();
+                        setTimeout(getProgress(), 2000);
 		            },
 		            error: function (err) {
 		                console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
@@ -182,7 +182,7 @@ if($state['notakey:stageOneComplete']){
 
 		    }
 
-		    getProgress();
+		    setTimeout(getProgress(), 2000);
 		</script>';
 }
 

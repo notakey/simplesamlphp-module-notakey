@@ -25,7 +25,7 @@ $state = SimpleSAML_Auth_State::loadState($stateId, sspmod_notakey_SspNtkBridge:
 
 
 if(!isset($state['notakey:stageOneComplete']) || !$state['notakey:stageOneComplete']) {
-	sleep(1);
+	sleep(10);
 	echo 'error';
 	// throw new SimpleSAML_Error_BadRequest('Invalid auth stage.');
 	exit();
@@ -34,7 +34,7 @@ if(!isset($state['notakey:stageOneComplete']) || !$state['notakey:stageOneComple
 try {
 	$state['notakey:bridge']->setService($state);
 } catch (Exception $e){
-	sleep(5);
+	sleep(10);
     echo 'error';
 	SimpleSAML\Logger::error("Unable to set service ".$e->getMessage());
 	exit();
@@ -42,7 +42,7 @@ try {
 
 
 if(!isset($state['notakey:uuid']) || !($res = $state['notakey:bridge']->queryAuth($state['notakey:uuid']))){
-	sleep(5);
+	sleep(10);
     echo 'error';
     SimpleSAML\Logger::error("UUID query error: {$state['notakey:uuid']}");
 	exit();
@@ -68,4 +68,4 @@ if($res['expired']){
 }
 
 echo 'noop';
-sleep(1);
+//sleep(1);

@@ -25,14 +25,14 @@ $state = SimpleSAML_Auth_State::loadState($stateId, sspmod_notakey_SspNtkBridge:
 //var_dump($state);
 
 if(!isset($state['notakey:qruuid'])){
-    sleep(2);
+    // sleep(2);
     SimpleSAML\Logger::debug("No UUID in state");
 	echo 'noop';
 	exit();
 }
 
 if(!($res = $state['notakey:bridge']->queryAuth($state['notakey:qruuid']))){
-	sleep(5);
+	sleep(10);
     echo 'error';
     SimpleSAML\Logger::error("Unable to query auth UUID {$state['notakey:qruuid']}");
 	exit();
