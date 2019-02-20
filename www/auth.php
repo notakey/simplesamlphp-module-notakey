@@ -142,6 +142,7 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
     function getQrAuthProgress(){
         $.ajax({
             url: \''.$base_url.'module/notakey/qrstat?State='.urlencode($stateId).'&service_id=0\',
+            cache : false,
             success: function(data) {
                 // $("#progress").html(data);
                 if(data == "approved" || data == "denied" || data == "expired") {
@@ -165,7 +166,8 @@ if($state['notakey:stageOneComplete']){
 
 		    function getProgress(){
 		        $.ajax({
-		            url: \''.$base_url.'module/notakey/status?State='.urlencode($stateId).'\',
+                    url: \''.$base_url.'module/notakey/status?State='.urlencode($stateId).'\',
+                    cache : false,
 		            success: function(data) {
 		                // $("#progress").html(data);
 		                if(data == "approved" || data == "denied" || data == "expired") {
