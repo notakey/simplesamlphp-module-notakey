@@ -128,7 +128,12 @@ if($username != '' && !is_null($service_id)){
 }
 
 $config = SimpleSAML_Configuration::getInstance();
-$t = new SimpleSAML_XHTML_Template($config, 'notakey:auth.tpl.php');
+
+if(count($state['notakey:bridge']->getServices() > 1) ){
+    $t = new SimpleSAML_XHTML_Template($config, 'notakey:auth.tpl.php');
+}else{
+    $t = new SimpleSAML_XHTML_Template($config, 'notakey:auth_multi.tpl.php');
+}
 
 $t->data['state'] = $state;
 $t->data['js_block'] = "";
