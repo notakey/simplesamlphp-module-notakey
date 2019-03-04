@@ -58,36 +58,31 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
 
             ?>
 
-            <table id="loginTable">
-                <tbody>
-                    <tr>
-                        <!--  <?php echo $this->t('{notakey:notakey:please_enter_username}') ?> -->
-                        <td style="padding: .3em;"><?php echo $this->t('{login:username}'); ?></td>
-                        <td><input type="text" value="<?php echo htmlspecialchars(isset($this->data['sel_user']))?$this->data['sel_user']:''; ?>" name="username" id="username" placeholder="" tabindex="1" maxlength="100"></td>
-                        <td style="padding: .4em; width: 125px;"><input type="button" id="regularsubmit" tabindex="3" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='Processing...'; this.disabled=true; this.form.submit(); return true;" /></td>
-                    </tr>
-                    <?php
-                    if ($this->data['rememberMeEnabled']) {
-                    // display the remember me checkbox (keep me logged in)
-                    ?>
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td id="regular_remember_me" colspan="2">
-                            <input type="checkbox" id="remember_me" tabindex="4" <?php echo ($this->data['rememberMeChecked']) ? 'checked="checked"' : ''; ?> name="remember_me" value="Yes"/>
-                            <small><?php echo $this->t('{login:remember_me}'); ?></small>
-                        </td>
-                        <td></td>
-                    </tr>
-                    <?php
-                    }
-                    ?>
-                    <tr>
-                        <td></td>
-                        <td><input type="button" tabindex="5" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='Processing...'; this.disabled=true; this.form.submit(); return true;" /></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div id="loginForm">
+
+                <div class="loginFormUsername">
+                    <!--  <?php echo $this->t('{notakey:notakey:please_enter_username}') ?> -->
+                    <?php echo $this->t('{login:username}'); ?>
+                    <input type="text" value="<?php echo htmlspecialchars(isset($this->data['sel_user']))?$this->data['sel_user']:''; ?>" name="username" id="username" placeholder="" tabindex="1" maxlength="100">
+                    <input type="button" id="regularsubmit" tabindex="3" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='Processing...'; this.disabled=true; this.form.submit(); return true;" />
+                    <input type="button" tabindex="5" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='Processing...'; this.disabled=true; this.form.submit(); return true;" />
+
+                </div>
+
+                <?php
+                if ($this->data['rememberMeEnabled']) {
+                // display the remember me checkbox (keep me logged in)
+                ?>
+                <div class="loginFormRememeberMe">
+
+                    <input type="checkbox" id="remember_me" tabindex="4" <?php echo ($this->data['rememberMeChecked']) ? 'checked="checked"' : ''; ?> name="remember_me" value="Yes"/>
+                    <small><?php echo $this->t('{login:remember_me}'); ?></small>
+
+                </div>
+                <?php
+                }
+                ?>
+            </div>
             <input type="hidden" name="ReturnTo" value="<?php echo htmlspecialchars($this->data['return_to']); ?>">
             <input type="hidden" name="State" value="<?php echo htmlspecialchars($this->data['state_id']); ?>">
         </form>

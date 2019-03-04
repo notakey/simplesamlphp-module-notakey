@@ -68,9 +68,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
                     <tr>
                         <td colspan="3">
                             <div id="spLoginLogo">
-                                <?php if($only_svc){ ?>
                                 <img alt="<?php echo $only_svc['name']; ?> logo"  src="<?php echo $only_svc['service_logo']; ?>" />
-                                <?php } ?>
                             </div>
                         </td>
                         <td rowspan="3">
