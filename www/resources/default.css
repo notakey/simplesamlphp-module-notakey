@@ -4576,6 +4576,10 @@ only screen and (max-device-width: 480px) {
         text-align: center;
     }
 
+    .service-logo-block {
+        padding: 1rem;
+    }
+
     .service-logo-block img {
         margin-left: auto;
         margin-right: auto;
