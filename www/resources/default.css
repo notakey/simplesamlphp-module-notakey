@@ -8216,7 +8216,7 @@ a.bg-inverse:hover {
     margin-bottom: auto !important;
 }
 
-@media (min-height: 930px) {
+@media (max-height: 930px) {
     .jumbotron {
         display: none;
     }
