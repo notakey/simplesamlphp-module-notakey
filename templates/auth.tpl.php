@@ -52,7 +52,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
                 if ($this->data['rememberMeEnabled']) {
                 // display the remember me checkbox (keep me logged in)
                 ?>
-                <div class="loginFormRememeberMe">
+                <div class="loginFormRememberMe">
                     <input type="checkbox" id="remember_me" tabindex="3" <?php echo ($this->data['rememberMeChecked']) ? 'checked="checked"' : ''; ?> name="remember_me" value="Yes"/>
                     <small><?php echo $this->t('{login:remember_me}'); ?></small>
                 </div>

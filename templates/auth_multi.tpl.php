@@ -36,7 +36,7 @@ if (count($this->data['warning_messages']) > 0) { ?>
 if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'] != 'pending'){
 ?>
     <div id="loginTableView">
-        <form action="/<?php echo $this->data['baseurlpath']; ?>module/notakey/auth" id="loginForm" method="post">
+        <form action="/<?php echo $this->data['baseurlpath']; ?>module/notakey/auth" id="loginPostForm" method="post">
             <?php
             if(count($this->data['service_list']) > 1){
             ?>
@@ -72,7 +72,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
                 if ($this->data['rememberMeEnabled']) {
                 // display the remember me checkbox (keep me logged in)
                 ?>
-                <div class="loginFormRememeberMe">
+                <div class="loginFormRememberMe">
 
                     <input type="checkbox" id="remember_me" tabindex="4" <?php echo ($this->data['rememberMeChecked']) ? 'checked="checked"' : ''; ?> name="remember_me" value="Yes"/>
                     <small><?php echo $this->t('{login:remember_me}'); ?></small>
