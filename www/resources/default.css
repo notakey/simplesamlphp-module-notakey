@@ -249,13 +249,33 @@ template {
 
 #mobile_remember_username,
 #mobile_remember_me,
-#mobilesubmit {
+#mobilesubmit,
+.mobileSubmit {
     display: none;
 }
 
+.mobileSubmit {
+    padding: 1rem;
+}
+
 #spLoginLogo {
-    width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem;
+}
+
+#spLoginLogo img {
+    max-width: 100%;
+}
+
+.loginFormUsername {
     text-align: center;
+}
+
+.loginFormRememeberMe {
+    text-align: center;
+    padding: 0.5rem;
 }
 
 @media print {
@@ -819,13 +839,13 @@ pre code {
 }
 
 #qrCodeView {
-    padding: 1rem;
     float: left;
 }
 
 #loginTableView {
     padding: 1rem;
     float: left;
+    max-width: 100%;
 }
 
 #authHeaderTitle {
@@ -834,7 +854,6 @@ pre code {
 
 #authContent {
     clear: both;
-    display: inline-block;
 }
 
 #authContent:after {
@@ -2644,7 +2663,8 @@ td {
 }
 
 #mobilesubmit {
-    display: none;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .table-warning,
@@ -4421,7 +4441,7 @@ tbody.collapse.show {
 
 .navbar-brand {
     display: inline-block;
-    padding-top: .25rem;
+    padding-top: .7rem;
     padding-bottom: .25rem;
     margin-right: 1rem;
     font-size: 1.25rem;
@@ -4558,7 +4578,9 @@ only screen and (max-device-width: 480px) {
     .logintext,
     #regular_remember_username,
     #regular_remember_me,
-    #regularsubmit {
+    #regularsubmit,
+    #qrCodeView,
+    .jumbotron {
         display: none;
     }
 
@@ -4601,8 +4623,8 @@ only screen and (max-device-width: 480px) {
     #mobilesubmit,
     #mobile_remember_username,
     #mobile_remember_me,
-    #mobilesubmit {
-        display: table-row;
+    .mobileSubmit {
+        display: block;
     }
 
     #loginTable {
@@ -4629,6 +4651,7 @@ only screen and (max-device-width: 480px) {
         padding: 1rem;
         margin-left: auto;
         margin-right: auto;
+        text-align: center;
     }
 
     .service-logo-block img {
@@ -8269,6 +8292,12 @@ a.bg-inverse:hover {
 .my-auto {
     margin-top: auto !important;
     margin-bottom: auto !important;
+}
+
+@media (min-height: 930px) {
+    .jumbotron {
+        display: none;
+    }
 }
 
 @media (min-width: 576px) {

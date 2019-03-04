@@ -51,6 +51,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
                 </label>
             </div>
             <?php } ?>
+            <div class="clearfix"></div>
             <?php
             }
 
@@ -65,8 +66,6 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
                     <?php echo $this->t('{login:username}'); ?>
                     <input type="text" value="<?php echo htmlspecialchars(isset($this->data['sel_user']))?$this->data['sel_user']:''; ?>" name="username" id="username" placeholder="" tabindex="1" maxlength="100">
                     <input type="button" id="regularsubmit" tabindex="3" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='Processing...'; this.disabled=true; this.form.submit(); return true;" />
-                    <input type="button" tabindex="5" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='Processing...'; this.disabled=true; this.form.submit(); return true;" />
-
                 </div>
 
                 <?php
@@ -82,6 +81,9 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
                 <?php
                 }
                 ?>
+                <div class="mobileSubmit">
+                    <input type="button" tabindex="4" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='Processing...'; this.disabled=true; this.form.submit(); return true;" />
+                </div>
             </div>
             <input type="hidden" name="ReturnTo" value="<?php echo htmlspecialchars($this->data['return_to']); ?>">
             <input type="hidden" name="State" value="<?php echo htmlspecialchars($this->data['state_id']); ?>">

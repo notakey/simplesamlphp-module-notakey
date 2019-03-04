@@ -128,11 +128,14 @@ if($username != '' && !is_null($service_id)){
 }
 
 $config = SimpleSAML_Configuration::getInstance();
+$services = $state['notakey:bridge']->getServices();
 
-if(count($state['notakey:bridge']->getServices() > 1) ){
+if(count($services) > 1){
     $t = new SimpleSAML_XHTML_Template($config, 'notakey:auth_multi.tpl.php');
+    $t->data['service_list'] = $services;
 }else{
     $t = new SimpleSAML_XHTML_Template($config, 'notakey:auth.tpl.php');
+    $t->data['service'] = array_pop($services);
 }
 
 $t->data['state'] = $state;
@@ -196,7 +199,9 @@ if($state['notakey:stageOneComplete']){
 $t->data['auth_state'] = $authstate;
 $t->data['state_id'] = $stateId;
 $t->data['return_to'] = $returnTo;
-$t->data['service_list'] = $state['notakey:bridge']->getServices();
+
+
+
 $t->data['warning_messages'] = $warning_messages;
 $t->data['sel_service'] = $service_id;
 $t->data['sel_user'] = $username;
