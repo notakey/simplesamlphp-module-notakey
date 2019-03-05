@@ -783,6 +783,14 @@ pre code {
     height: 0;
 }
 
+#regularsubmit {
+    width: 8rem;
+}
+
+.regularSubmit {
+    text-align: center;
+}
+
 @media (min-width: 576px) {
     .container {
         padding-right: 15px;

@@ -63,11 +63,9 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
 
                 <div class="loginFormUsername">
                     <!--  <?php echo $this->t('{notakey:notakey:please_enter_username}') ?> -->
-                    <?php echo $this->t('{login:username}'); ?>
-                    <input type="text" value="<?php echo htmlspecialchars(isset($this->data['sel_user']))?$this->data['sel_user']:''; ?>" name="username" id="username" placeholder="" tabindex="1" maxlength="100">
-                    <input type="button" id="regularsubmit" tabindex="3" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='Processing...'; this.disabled=true; this.form.submit(); return true;" />
-                </div>
 
+                    <input type="text" value="<?php echo htmlspecialchars(isset($this->data['sel_user']))?$this->data['sel_user']:''; ?>" name="username" id="username" placeholder="<?php echo $this->t('{login:username}'); ?>" tabindex="1" maxlength="100">
+                </div>
                 <?php
                 if ($this->data['rememberMeEnabled']) {
                 // display the remember me checkbox (keep me logged in)
@@ -81,8 +79,11 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
                 <?php
                 }
                 ?>
+                <div class="regularSubmit">
+                    <input type="button" id="regularsubmit" tabindex="4" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='<?php echo $this->t('{login:processing}'); ?>'; this.disabled=true; this.form.submit(); return true;" />
+                </div>
                 <div class="mobileSubmit">
-                    <input type="button" tabindex="4" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='Processing...'; this.disabled=true; this.form.submit(); return true;" />
+                    <input type="button" tabindex="4" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='<?php echo $this->t('{login:processing}'); ?>'; this.disabled=true; this.form.submit(); return true;" />
                 </div>
             </div>
             <input type="hidden" name="ReturnTo" value="<?php echo htmlspecialchars($this->data['return_to']); ?>">
