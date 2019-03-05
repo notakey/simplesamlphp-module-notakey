@@ -1,7 +1,7 @@
 <?php
 
 if (!isset($this->data['autofocus'])) {
-	$this->data['autofocus'] = 'username';
+    $this->data['autofocus'] = 'username';
 }
 
 $this->data['header'] = $this->t('{notakey:notakey:auth_header}');
@@ -10,22 +10,22 @@ $this->includeAtTemplateBase('includes/header.php');
 // echo '<script type="text/javascript" src="'.$this->data['baseurlpath'].'resources/jquery-1.8.js"></script>';
 echo($this->data['js_block']);
 if (count($this->data['warning_messages']) > 0) { ?>
-		<?php foreach($this->data['warning_messages'] as $err){ ?>
-		<div class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #f5f5f5;">
-			<div class="float-l">
-				<img src="/<?php echo $this->data['baseurlpath']; ?>resources/icons/experience/gtk-dialog-error.48x48.png" class="erroricon" style="margin: 15px;" />
-			</div>
-			<div style="padding-top: 0.7rem; padding-left: 1rem;" class="float-l">
-				<h2><?php echo $this->t('{login:error_header}'); ?></h2>
-			</div>
-			<div class="clearfix"></div>
-			<div style="padding: 1rem;">
-				<p><?php echo $err; ?> </p>
-			</div>
-			<div class="clearfix"></div>
-			<!--  <div style="clear:both;"></div> -->
-		</div>
-		<?php } ?>
+        <?php foreach($this->data['warning_messages'] as $err){ ?>
+        <div class="ui-tabs ui-widget ui-widget-content ui-corner-all" style="background: #f5f5f5;">
+            <div class="float-l">
+                <img src="/<?php echo $this->data['baseurlpath']; ?>resources/icons/experience/gtk-dialog-error.48x48.png" class="erroricon" style="margin: 15px;" />
+            </div>
+            <div style="padding-top: 0.7rem; padding-left: 1rem;" class="float-l">
+                <h2><?php echo $this->t('{login:error_header}'); ?></h2>
+            </div>
+            <div class="clearfix"></div>
+            <div style="padding: 1rem;">
+                <p><?php echo $err; ?> </p>
+            </div>
+            <div class="clearfix"></div>
+            <!--  <div style="clear:both;"></div> -->
+        </div>
+        <?php } ?>
 <?php
 }
 ?>
@@ -93,22 +93,22 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
 <?php
 }else{
 ?>
-		<div style="clear:both;"></div><div class="control-group ">
-		  <div class="service-logo-block">
-		  	<?php $selected_svc = $this->data['service_list'][$this->data['sel_service']]; ?>
-			<img alt="<?php echo $selected_svc['name']; ?> logo"  src="<?php echo $selected_svc['service_logo']; ?>" />
-		  </div>
-		  <div class="clearfix"></div>
-		  <div class="control-group" >
-			  <div class="float-l" id="progressind">
-			  	<img height="40" src="/<?php echo $this->data['baseurlpath']; ?>module/notakey/resources/loading.gif" width="40" >
-			  </div>
-			   <div class="float-l" id="progresstxt" style="max-width: 30rem;">
-		    	<?php echo $this->t('{notakey:notakey:please_proceed_on_mobile}') ?>
-			  </div>
-		  </div>
-		  <div class="clearfix"></div>
-		</div>
+        <div style="clear:both;"></div><div class="control-group ">
+            <?php $selected_svc = $this->data['service_list'][$this->data['sel_service']]; ?>
+            <div id="spLoginLogo">
+                <img alt="<?php echo $selected_svc['name']; ?> logo"  src="<?php echo $selected_svc['service_logo']; ?>" />
+            </div>
+          <div class="clearfix"></div>
+          <div class="control-group" >
+                <div class="float-l" id="progressind">
+                  <img height="40" src="/<?php echo $this->data['baseurlpath']; ?>module/notakey/resources/loading.gif" width="40" >
+                </div>
+                <div class="float-l" id="progresstxt" style="max-width: 30rem;">
+                    <?php echo $this->t('{notakey:notakey:please_proceed_on_mobile}') ?>
+                </div>
+          </div>
+          <div class="clearfix"></div>
+        </div>
 <?php
 }
 

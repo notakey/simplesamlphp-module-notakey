@@ -81,8 +81,8 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
 }else{
 ?>
 <div style="clear:both;"></div><div class="control-group ">
-    <div class="service-logo-block">
-    <img alt="<?php echo $this->data['service']['name']; ?> logo"  src="<?php echo $this->data['service']['service_logo']; ?>" />
+    <div id="spLoginLogo">
+        <img alt="<?php echo $this->data['service']['name']; ?> logo"  src="<?php echo $this->data['service']['service_logo']; ?>" />
     </div>
     <div class="clearfix"></div>
     <div class="control-group" >
