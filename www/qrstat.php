@@ -15,18 +15,18 @@ if (!isset($_REQUEST['State'])) {
 
 $service_id = intval($_REQUEST['service_id']);
 
-SimpleSAML\Logger::info("StateID set to $stateId");
+// SimpleSAML\Logger::debug("StateID set to $stateId");
 
 $sid = SimpleSAML_Auth_State::parseStateID($stateId);
 
-SimpleSAML\Logger::info("SID data set to ".json_encode($sid));
+// SimpleSAML\Logger::debug("SID data set to ".json_encode($sid));
 
 $state = SimpleSAML_Auth_State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
 //var_dump($state);
 
 if(!isset($state['notakey:qruuid'])){
     // sleep(2);
-    SimpleSAML\Logger::debug("No UUID in state");
+    // SimpleSAML\Logger::debug("No UUID in state");
     echo 'noop';
     sleep(2);
 	exit();
