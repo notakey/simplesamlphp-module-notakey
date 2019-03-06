@@ -46,7 +46,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
             <?php foreach($this->data['service_list'] as $app_id => $s ){ ?>
             <div class="control-group float-l service-logo">
                 <label class="service-selector">
-                    <input type="radio" name="service_id" value="<?php echo $app_id; ?>" <?php if(isset($this->data['sel_service']) && $app_id == $this->data['sel_service']){ ?>checked="checked"<?php } ?> />
+                    <input type="radio" name="service_id" value="<?php echo $app_id; ?>" <?php if(isset($this->data['selected_service']) && $app_id == $this->data['selected_service']){ ?>checked="checked"<?php } ?> />
                     <img alt="<?php echo $s['name']; ?>"  src="<?php echo $s['service_logo']; ?>" />
                 </label>
             </div>
@@ -64,7 +64,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
                 <div class="loginFormUsername">
                     <!--  <?php echo $this->t('{notakey:notakey:please_enter_username}') ?> -->
 
-                    <input type="text" value="<?php echo htmlspecialchars(isset($this->data['sel_user']))?$this->data['sel_user']:''; ?>" name="username" id="username" placeholder="<?php echo $this->t('{login:username}'); ?>" tabindex="1" maxlength="100">
+                    <input type="text" value="<?php echo htmlspecialchars(isset($this->data['username_hint']))?$this->data['username_hint']:''; ?>" name="username" id="username" placeholder="<?php echo $this->t('{login:username}'); ?>" tabindex="1" maxlength="100">
                 </div>
                 <?php
                 if ($this->data['rememberMeEnabled']) {
@@ -95,7 +95,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
 }else{
 ?>
         <div style="clear:both;"></div><div class="control-group ">
-            <?php $selected_svc = $this->data['service_list'][$this->data['sel_service']]; ?>
+            <?php $selected_svc = $this->data['service_list'][$this->data['selected_service']]; ?>
             <div id="spLoginLogo">
                 <img alt="<?php echo $selected_svc['name']; ?> logo"  src="<?php echo $selected_svc['service_logo']; ?>" />
             </div>

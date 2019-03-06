@@ -201,22 +201,16 @@ $t->data['return_to'] = $returnTo;
 
 
 $t->data['warning_messages'] = $warning_messages;
-$t->data['sel_service'] = $service_id;
-$t->data['sel_user'] = $username;
+$t->data['selected_service'] = $service_id;
+$t->data['username_hint'] = $username;
 $t->data['qr_link'] = $base_url."module/notakey/qr?State=".urlencode($stateId)."&service_id=0";
 
 if (array_key_exists('forcedUsername', $state)) {
-	$t->data['sel_user'] = $state['forcedUsername'];
+	$t->data['username_hint'] = $state['forcedUsername'];
 }
 
 $t->data['rememberMeEnabled'] = $state['notakey:bridge']->isRememberMeEnabled();
 $t->data['rememberMeChecked'] = $state['notakey:bridge']->isRememberMeChecked();
-
-// TODO
-// Add error code display in template
-// $t->data['errorcode'] = $errorCode;
-// $t->data['errorcodes'] = SimpleSAML\Error\ErrorCodes::getAllErrorCodeMessages();
-// $t->data['errorparams'] = $errorParams;
 
 $t->show();
 

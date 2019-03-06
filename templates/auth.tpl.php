@@ -45,7 +45,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
 
                 <div class="loginFormUsername">
                     <!--  <?php echo $this->t('{notakey:notakey:please_enter_username}') ?> -->
-                    <input type="text" value="<?php echo htmlspecialchars(isset($this->data['sel_user']))?$this->data['sel_user']:''; ?>" name="username" id="username" placeholder="<?php echo $this->t('{login:username}'); ?>" tabindex="1" maxlength="100">
+                    <input type="text" value="<?php echo htmlspecialchars(isset($this->data['username_hint']))?$this->data['username_hint']:''; ?>" name="username" id="username" placeholder="<?php echo $this->t('{login:username}'); ?>" tabindex="1" maxlength="100">
                 </div>
                 <?php
                 if ($this->data['rememberMeEnabled']) {
