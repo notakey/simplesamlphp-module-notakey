@@ -154,8 +154,9 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
             success: function(data) {
                 // $("#progress").html(data);
                 if(data == "approved" || data == "denied" || data == "expired") {
+                    clearInterval(refreshTag);
                     location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
-                        return;
+                    return;
                 }
             },
             error: function (err) {
@@ -165,7 +166,7 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
         });
     }
 
-    setInterval("getQrAuthProgress()", 3000);
+    var refreshTag = setInterval("getQrAuthProgress()", 3000);
 </script>';
 
 if($state['notakey:stageOneComplete']){
@@ -178,6 +179,7 @@ if($state['notakey:stageOneComplete']){
 		            success: function(data) {
 		                // $("#progress").html(data);
 		                if(data == "approved" || data == "denied" || data == "expired") {
+                            clearInterval(refreshTag);
 		                	location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
 		                  	return;
 		                }
@@ -190,7 +192,7 @@ if($state['notakey:stageOneComplete']){
 
 		    }
 
-		    setInterval("getProgress()", 2000);
+		    var refreshTag = setInterval("getProgress()", 2000);
 		</script>';
 }
 

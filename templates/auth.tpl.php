@@ -73,7 +73,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
             <div id="qrCodeView">
                 <img alt="Authentication QR code"  src="<?php echo $this->data['qr_link']; ?>" height="300" width="300" />
             </div>
-            <?php echo  $this->data['js_qr_check']; ?>
+            <?php echo $this->data['js_qr_check']; ?>
             <?php } ?>
         </form>
     </div>
