@@ -350,7 +350,9 @@ class sspmod_notakey_SspNtkBridge {
 			return NULL;
 		}
 
-		list($state['notakey:attr.first_name'], $state['notakey:attr.last_name']) = explode(' ' , $state ['notakey:attr.display_name'], 2);
+        if(isset($state['notakey:attr.display_name']) && strpos($state['notakey:attr.display_name'], ' ') > 0){
+            list($state['notakey:attr.first_name'], $state['notakey:attr.last_name']) = explode(' ' , $state ['notakey:attr.display_name'], 2);
+        }
 
 		$attributes = array ();
 
