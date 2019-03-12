@@ -8,7 +8,7 @@ if (!isset($_REQUEST['State'])) {
 	throw new SimpleSAML_Error_BadRequest('Missing "State" parameter.');
 }
 
-$authstate = 'pending';
+$authstate = 'none';
 $apiTestOK = true;
 $warning_messages = array();
 $service_id = null;
@@ -46,6 +46,8 @@ if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete
 		$warning_messages[] = $e->getMessage();
 	}
 
+    $authstate = 'pending';
+
 	SimpleSAML\Logger::info("Querying API for response status");
 	if($res = $state['notakey:bridge']->queryAuth($state['notakey:uuid'])){
 		// SimpleSAML\Logger::info("queryAuthApi response data set to ".print_r($res, true));
@@ -81,7 +83,7 @@ if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete
 
 // We are in a filter mode and only one endpoint exists
 
-if ($state['notakey:mode'] == 'filter' && count($state['notakey:bridge']->getServices()) == 1 && $authstate == 'pending') {
+if ($state['notakey:mode'] == 'filter' && count($state['notakey:bridge']->getServices()) == 1 && $authstate == 'none') {
 	SimpleSAML\Logger::info("Auto submitting auth request in filter mode");
 	$sv_list = array_keys($state['notakey:bridge']->getServices());
 	$service_id = array_pop($sv_list);

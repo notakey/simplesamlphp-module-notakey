@@ -52,14 +52,20 @@ if(isset($res['response_type']) && $res['response_type'] == 'ApproveRequest'){
 }
 
 if(isset($res['response_type']) && $res['response_type'] == 'DenyRequest'){
-    echo 'denied';
     SimpleSAML\Logger::info("UUID {$state['notakey:qruuid']} login denied");
+    $state['notakey:stageOneComplete'] = false;
+    unset($state['notakey:qruuid']);
+    SimpleSAML_Auth_State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
+    echo 'denied';
 	exit();
 }
 
 if($res['expired']){
-    echo 'expired';
     SimpleSAML\Logger::info("UUID {$state['notakey:qruuid']} login expired");
+    $state['notakey:stageOneComplete'] = false;
+    unset($state['notakey:qruuid']);
+    SimpleSAML_Auth_State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
+    echo 'expired';
 	exit();
 }
 
