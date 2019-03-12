@@ -156,7 +156,7 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
             success: function(data) {
                 // $("#progress").html(data);
                 if(data == "approved" || data == "denied" || data == "expired") {
-                    clearInterval(refreshTag);
+                    clearInterval(refreshTagQr);
                     location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
                     return;
                 }
@@ -168,7 +168,7 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
         });
     }
 
-    var refreshTag = setInterval("getQrAuthProgress()", 3000);
+    var refreshTagQr = setInterval("getQrAuthProgress()", 3000);
 </script>';
 
 if($state['notakey:stageOneComplete']){
