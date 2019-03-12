@@ -358,7 +358,8 @@ class sspmod_notakey_SspNtkBridge {
 
 		foreach(self::$attrmap as $attr=>$st_attr){
 			if(!isset($state[$st_attr])){
-				$attributes[$attr] = array( "" );
+                $attributes[$attr] = array( "" );
+                continue;
 			}
 
 			$attributes[$attr] = array( $state[$st_attr] );

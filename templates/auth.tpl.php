@@ -33,7 +33,7 @@ if (count($this->data['warning_messages']) > 0) { ?>
 <p class="logintext"><?php echo $this->t('{notakey:notakey:login_message}'); ?></p>
 <div id="authContent">
 <?php
-if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'] != 'pending'){
+if(!$this->data['state']['notakey:stageOneComplete']){
 ?>
     <div id="loginTableView">
         <form action="/<?php echo $this->data['baseurlpath']; ?>module/notakey/auth" id="loginForm" method="post">
