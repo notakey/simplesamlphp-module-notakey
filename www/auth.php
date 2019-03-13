@@ -156,16 +156,21 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
             success: function(data) {
                 // $("#progress").html(data);
                 if(data == "approved" || data == "denied" || data == "expired") {
-                    clearInterval(refreshTagQr);
+                    cancelQrQuery();
                     location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
                     return;
                 }
             },
             error: function (err) {
                 console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
-                location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
             }
         });
+    }
+
+    function cancelQrQuery(){
+        if(refreshTagQr){
+            clearInterval(refreshTagQr);
+        }
     }
 
     var refreshTagQr = setInterval("getQrAuthProgress()", 3000);

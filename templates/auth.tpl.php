@@ -59,10 +59,10 @@ if(!$this->data['state']['notakey:stageOneComplete']){
                 }
                 ?>
                 <div class="regularSubmit">
-                    <input type="button" id="regularsubmit" tabindex="4" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='<?php echo $this->t('{login:processing}'); ?>'; this.disabled=true; this.form.submit(); return true;" />
+                    <input type="button" id="regularsubmit" tabindex="4" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='<?php echo $this->t('{login:processing}'); ?>'; cancelQrQuery(); this.disabled=true; this.form.submit(); return true;" />
                 </div>
                 <div class="mobileSubmit">
-                    <input type="button" tabindex="4" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='<?php echo $this->t('{login:processing}'); ?>'; this.disabled=true; this.form.submit(); return true;" />
+                    <input type="button" tabindex="4" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='<?php echo $this->t('{login:processing}'); ?>'; cancelQrQuery(); this.disabled=true; this.form.submit(); return true;" />
                 </div>
                 <input type="hidden" name="service_id" value="0" />
                 <input type="hidden" name="ReturnTo" value="<?php echo htmlspecialchars($this->data['return_to']); ?>">
