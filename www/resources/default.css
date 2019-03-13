@@ -271,6 +271,7 @@ template {
 
 #loginForm {
     float: left;
+    padding-bottom: 2rem;
 }
 
 .loginFormUsername {
