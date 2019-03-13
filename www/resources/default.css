@@ -791,6 +791,10 @@ pre code {
     text-align: center;
 }
 
+#progressind {
+    padding-top: 4px;
+}
+
 @media (min-width: 576px) {
     .container {
         padding-right: 15px;
