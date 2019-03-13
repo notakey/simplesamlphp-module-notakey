@@ -20,7 +20,7 @@ if (count($this->data['warning_messages']) > 0) { ?>
             </div>
             <div class="clearfix"></div>
             <div style="padding: 1rem;">
-                <p><?php echo $err; ?> </p>
+                <p><?php echo htmlspecialchars($err); ?> </p>
             </div>
             <div class="clearfix"></div>
             <!--  <div style="clear:both;"></div> -->
@@ -40,12 +40,12 @@ if(!$this->data['state']['notakey:stageOneComplete']){
             <div id="loginForm">
 
                 <div id="spLoginLogo">
-                    <img alt="<?php echo $this->data['service']['name']; ?> logo"  src="<?php echo $this->data['service']['service_logo']; ?>" />
+                    <img alt="<?php echo htmlspecialchars($this->data['service']['name']); ?> logo" src="<?php echo $this->data['service']['service_logo']; ?>" />
                 </div>
 
                 <div class="loginFormUsername">
                     <!--  <?php echo $this->t('{notakey:notakey:please_enter_username}') ?> -->
-                    <input type="text" value="<?php echo htmlspecialchars(isset($this->data['username_hint']))?$this->data['username_hint']:''; ?>" name="username" id="username" placeholder="<?php echo $this->t('{login:username}'); ?>" tabindex="1" maxlength="100">
+                    <input type="text" value="<?php echo isset($this->data['username_hint'])?htmlspecialchars($this->data['username_hint']):''; ?>" name="username" id="username" placeholder="<?php echo $this->t('{login:username}'); ?>" tabindex="1" maxlength="100">
                 </div>
                 <?php
                 if ($this->data['rememberMeEnabled']) {
@@ -84,7 +84,7 @@ if(!$this->data['state']['notakey:stageOneComplete']){
 ?>
 <div style="clear:both;"></div><div class="control-group ">
     <div id="spLoginLogo">
-        <img alt="<?php echo $this->data['service']['name']; ?> logo"  src="<?php echo $this->data['service']['service_logo']; ?>" />
+        <img alt="<?php echo htmlspecialchars($this->data['service']['name']); ?> logo"  src="<?php echo $this->data['service']['service_logo']; ?>" />
     </div>
     <div class="clearfix"></div>
     <div class="control-group" >

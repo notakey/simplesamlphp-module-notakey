@@ -20,7 +20,7 @@ if (count($this->data['warning_messages']) > 0) { ?>
             </div>
             <div class="clearfix"></div>
             <div style="padding: 1rem;">
-                <p><?php echo $err; ?> </p>
+                <p><?php echo htmlspecialchars($err); ?> </p>
             </div>
             <div class="clearfix"></div>
             <!--  <div style="clear:both;"></div> -->
@@ -47,7 +47,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
             <div class="control-group float-l service-logo">
                 <label class="service-selector">
                     <input type="radio" name="service_id" value="<?php echo $app_id; ?>" <?php if(isset($this->data['selected_service']) && $app_id == $this->data['selected_service']){ ?>checked="checked"<?php } ?> />
-                    <img alt="<?php echo $s['name']; ?>"  src="<?php echo $s['service_logo']; ?>" />
+                    <img alt="<?php echo htmlspecialchars($s['name']); ?>"  src="<?php echo $s['service_logo']; ?>" />
                 </label>
             </div>
             <?php } ?>
@@ -64,7 +64,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
                 <div class="loginFormUsername">
                     <!--  <?php echo $this->t('{notakey:notakey:please_enter_username}') ?> -->
 
-                    <input type="text" value="<?php echo htmlspecialchars(isset($this->data['username_hint']))?$this->data['username_hint']:''; ?>" name="username" id="username" placeholder="<?php echo $this->t('{login:username}'); ?>" tabindex="1" maxlength="100">
+                    <input type="text" value="<?php echo isset($this->data['username_hint'])?htmlspecialchars($this->data['username_hint']):''; ?>" name="username" id="username" placeholder="<?php echo $this->t('{login:username}'); ?>" tabindex="1" maxlength="100">
                 </div>
                 <?php
                 if ($this->data['rememberMeEnabled']) {
@@ -97,7 +97,7 @@ if(!$this->data['state']['notakey:stageOneComplete'] || $this->data['auth_state'
         <div style="clear:both;"></div><div class="control-group ">
             <?php $selected_svc = $this->data['service_list'][$this->data['selected_service']]; ?>
             <div id="spLoginLogo">
-                <img alt="<?php echo $selected_svc['name']; ?> logo"  src="<?php echo $selected_svc['service_logo']; ?>" />
+                <img alt="<?php echo htmlspecialchars($selected_svc['name']); ?> logo" src="<?php echo $selected_svc['service_logo']; ?>" />
             </div>
           <div class="clearfix"></div>
           <div class="control-group" >
