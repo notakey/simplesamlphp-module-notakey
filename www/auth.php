@@ -140,6 +140,14 @@ if(count($services) > 1){
     $t->data['service'] = array_pop($services);
 }
 
+$detect = new Mobile_Detect;
+$t->data['mobile'] = true;
+if(!$detect->isMobile() && !$detect->isTablet()){
+    $t->data['mobile'] = false;
+}
+
+
+
 $t->data['state'] = $state;
 $t->data['js_block'] = "";
 // $t->data['jquery'] = array('version' => '1.8', 'core' => 1);

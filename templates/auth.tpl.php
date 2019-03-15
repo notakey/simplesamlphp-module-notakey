@@ -59,17 +59,16 @@ if(!$this->data['state']['notakey:stageOneComplete']){
                 }
                 ?>
                 <div class="regularSubmit">
-                    <input type="button" id="regularsubmit" tabindex="4" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='<?php echo $this->t('{login:processing}'); ?>'; cancelQrQuery(); this.disabled=true; this.form.submit(); return true;" />
+                    <input type="button" id="regularsubmit" tabindex="4" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='<?php echo $this->t('{login:processing}'); ?>'; <?php if(!$this->data['mobile']){ echo 'cancelQrQuery();'; } ?> this.disabled=true; this.form.submit(); return true;" />
                 </div>
                 <div class="mobileSubmit">
-                    <input type="button" tabindex="4" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='<?php echo $this->t('{login:processing}'); ?>'; cancelQrQuery(); this.disabled=true; this.form.submit(); return true;" />
+                    <input type="button" tabindex="4" id="mobilesubmit" value="<?php echo $this->t('{login:login_button}'); ?>" onClick=" this.value='<?php echo $this->t('{login:processing}'); ?>'; <?php if(!$this->data['mobile']){ echo 'cancelQrQuery();'; } ?> this.disabled=true; this.form.submit(); return true;" />
                 </div>
                 <input type="hidden" name="service_id" value="0" />
                 <input type="hidden" name="ReturnTo" value="<?php echo htmlspecialchars($this->data['return_to']); ?>">
                 <input type="hidden" name="State" value="<?php echo htmlspecialchars($this->data['state_id']); ?>">
             </div>
-            <?php $detect = new Mobile_Detect; ?>
-            <?php if($this->data['service'] && !$detect->isMobile() && !$detect->isTablet()){ ?>
+            <?php if($this->data['service'] && !$this->data['mobile']){ ?>
             <div id="qrCodeView">
                 <img alt="Authentication QR code"  src="<?php echo $this->data['qr_link']; ?>" height="300" width="300" />
             </div>
