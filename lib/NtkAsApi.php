@@ -271,6 +271,7 @@ class sspmod_notakey_NtkAsApi {
             'grant_type' => 'client_credentials',
             'client_id' => $this->api_client,
             'client_secret' => $this->api_secret,
+            'scope'=> 'urn:notakey:auth'
         ];
 
         $h = [
