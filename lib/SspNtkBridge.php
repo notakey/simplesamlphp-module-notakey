@@ -298,8 +298,38 @@ class sspmod_notakey_SspNtkBridge {
         return true;
     }
 
+    public function checkLoopDetectionCookie(){
+        SimpleSAML\Logger::debug("checkLoopDetectionCookie: called for {$this->getAuthId()}" );
+
+        if (isset($_COOKIE[$this->getAuthId() . '-loop-detection'])){
+            $time = unserialize(base64_decode($_COOKIE[$this->getAuthId() . '-loop-detection']));
+            if((time() - $time) < 5){
+                throw new SimpleSAML_Error_Exception('Login loop detected, seems like there is a problem with configuration. Please contact your support.');
+                return false;
+            }
+        }else{
+            SimpleSAML\Logger::debug("checkLoopDetectionCookie: previous login for {$this->getAuthId()} not found" );
+        }
+        return true;
+    }
+
+    private function setLoopDetectionCookie(){
+        SimpleSAML\Logger::debug("setLoopDetectionCookie: called for {$this->getAuthId()}" );
+        $sessionHandler = \SimpleSAML\SessionHandler::getSessionHandler();
+        $params = $sessionHandler->getCookieParams();
+        $params['expire'] = time() + 31536000;
+        \SimpleSAML\Utils\HTTP::setCookie($this->getAuthId() . '-loop-detection', base64_encode(serialize(time())), $params, FALSE);
+
+        return true;
+    }
+
     public function startAuth($username, &$state, $remember = '') {
+        if(!$this->checkLoopDetectionCookie()){
+            return false;
+        }
+
         $this->setRememberCookie($username, $remember);
+        $this->setLoopDetectionCookie();
 
         $areq =  $this->ntkapi()->authExt($username);
 
@@ -307,8 +337,6 @@ class sspmod_notakey_SspNtkBridge {
             $this->setAuthState($state, $areq);
             return true;
         }
-
-
 
         return false;
     }

@@ -1,5 +1,5 @@
 <?php
-$this->data['header'] = $this->t('metaconv_title');
+$this->data['header'] = $this->t('{admin:metaconv_title}');
 $this->includeAtTemplateBase('includes/header.php');
 ?>
     <h2><?php echo $this->t('{admin:metaconv_title}'); ?></h2>
