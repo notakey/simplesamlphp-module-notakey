@@ -2,7 +2,7 @@
 $this->data['header'] = $this->t('metaconv_title');
 $this->includeAtTemplateBase('includes/header.php');
 ?>
-    <h2><?php echo $this->t('metaconv_title'); ?></h2>
+    <h2><?php echo $this->t('{admin:metaconv_title}'); ?></h2>
     <form action="?" method="post" enctype="multipart/form-data">
         <p><?php echo($this->t('{admin:metaconv_xmlmetadata}')); ?></p>
         <p>
@@ -10,10 +10,10 @@ $this->includeAtTemplateBase('includes/header.php');
                       name="xmldata"><?php echo htmlspecialchars($this->data['xmldata']); ?></textarea>
         </p>
         <p>
-            <?php echo $this->t('metaconv_selectfile'); ?>
+            <?php echo $this->t('{admin:metaconv_selectfile}'); ?>
             <input type="file" name="xmlfile" /></p>
         <p>
-            <button type="submit" class="btn"><?php echo $this->t('metaconv_parse'); ?></button>
+            <button type="submit" class="btn"><?php echo $this->t('{admin:metaconv_parse}'); ?></button>
         </p>
     </form>
 <?php
@@ -21,7 +21,7 @@ $output = $this->data['output'];
 
 if (!empty($output)) {
 ?>
-    <h2><?php echo $this->t('metaconv_converted'); ?></h2>
+    <h2><?php echo $this->t('{admin:metaconv_converted}'); ?></h2>
 <?php
     $i = 1;
     foreach ($output as $type => $text) {

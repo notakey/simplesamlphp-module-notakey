@@ -52,7 +52,7 @@ if (!empty($xmldata)) {
     $output = array();
 }
 
-$template = new SimpleSAML_XHTML_Template($config, 'metacvrt.tpl.php', 'admin');
+$template = new SimpleSAML_XHTML_Template($config, 'notakey:metacvrt.tpl.php');
 $template->data['clipboard.js'] = true;
 $template->data['xmldata'] = $xmldata;
 $template->data['output'] = $output;

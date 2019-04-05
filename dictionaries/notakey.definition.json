@@ -1,20 +1,20 @@
 {
-	"auth_header": {
-		"en": "Notakey authentication"
-	},
-	"login_header": {
-		"en": "Authentication request"
-	},
-	"login_message": {
-		"en": "Have your mobile device handy to approve authentication request in mobile app."
-	},
-	"select_auth_message": {
-		"en": "Please select your authentication provider, by clicking on appropriate logo"
-	},
-	"please_enter_username": {
-		"en": "Please enter your username"
-	},
-	"please_proceed_on_mobile": {
-		"en": "Authentication request created successfully. Please proceed with authentication on your mobile device."
-	} 
+    "auth_header": {
+        "en": "Notakey authentication"
+    },
+    "login_header": {
+        "en": "Authentication request"
+    },
+    "login_message": {
+        "en": "Have your mobile device handy to approve authentication request in mobile app."
+    },
+    "select_auth_message": {
+        "en": "Please select your authentication provider, by clicking on appropriate logo"
+    },
+    "please_enter_username": {
+        "en": "Please enter your username"
+    },
+    "please_proceed_on_mobile": {
+        "en": "Authentication request created successfully. Please proceed with authentication on your mobile device."
+    }
 }
