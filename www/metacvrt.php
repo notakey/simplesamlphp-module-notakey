@@ -52,7 +52,7 @@ if (!empty($xmldata)) {
     $output = array();
 }
 
-$template = new SimpleSAML_XHTML_Template($config, 'metadata-converter.php', 'admin');
+$template = new SimpleSAML_XHTML_Template($config, 'metacvrt.tpl.php', 'admin');
 $template->data['clipboard.js'] = true;
 $template->data['xmldata'] = $xmldata;
 $template->data['output'] = $output;
