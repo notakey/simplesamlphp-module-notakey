@@ -317,7 +317,7 @@ class sspmod_notakey_SspNtkBridge {
         SimpleSAML\Logger::debug("setLoopDetectionCookie: called for {$this->getAuthId()}" );
         $sessionHandler = \SimpleSAML\SessionHandler::getSessionHandler();
         $params = $sessionHandler->getCookieParams();
-        $params['expire'] = time() + 31536000;
+        $params['expire'] = time() + 600;
         \SimpleSAML\Utils\HTTP::setCookie($this->getAuthId() . '-loop-detection', base64_encode(serialize(time())), $params, FALSE);
 
         return true;
