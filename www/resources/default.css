@@ -275,12 +275,17 @@ template {
 }
 
 .loginFormUsername {
+    padding-top: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
     text-align: center;
 }
 
 .loginFormRememberMe {
     text-align: center;
-    padding: 0.5rem;
+    padding-top: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }
 
 html {
@@ -789,6 +794,9 @@ pre code {
 }
 
 .regularSubmit {
+    padding-top: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
     text-align: center;
 }
 
