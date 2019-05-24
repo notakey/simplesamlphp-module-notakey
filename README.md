@@ -78,7 +78,7 @@ Notakey Authentication appliance
 
 If running in NAA environment configure using cli.
 
-As primary authentication source:
+- As primary authentication source:
 
     ntk cfg :sso.auth '{
         "notakey-nopass": {
@@ -97,7 +97,7 @@ As primary authentication source:
         }' --json-input
 
 
-As additional factor to primary authentication:
+- As additional factor to primary authentication:
 
     ntk cfg :sso.base.\"authproc.idp\".\"90\" '{
         "class": "notakey:Filter",
