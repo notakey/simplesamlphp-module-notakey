@@ -14,33 +14,28 @@ Needs configuration in authsources listing all allowed backends
         // remove domain from username when remembering
         "attrs.stripdomain" =>  false,
         // the attribute to populate username
-             "user_id.attr" =>  "uid",
+        "user_id.attr" =>  "uid",
         // enable additional logging
-             "debug" =>  true,
+        "debug" =>  true,
         // multiple endpints are possible (Notakey services)
         // user will have option to select one during authentication
                 'endpoints' => array(
                     array(
-                                'name' => "Notakey service 1",
-                                'url' => 'https://core1.fid.notakey.com/',
-                                'service_id' => '8c0b4f63-c1e9-4d1c-990e-8fc72740791c',
-                            'service_logo' => 'https://core1.fid.notakey.com/_cimg/8c0b4f63-c1e9-4d1c-990e-8fc72740791c',
-
+                            'name' => 'Notakey service 1',
+                            'url' => 'https://api.mydomain.com/',
+                            'service_id' => '8c0b4f63-c1e9-4d1c-990e-12312312312',
+                            'client_id' => 'api-client-id',
+                            'client_secret' => 'client-secret',
+                            'service_logo' => '/userlogos/8c0b4f63-c1e9-4d1c-990e-8fc72740791c.png'
                         ),
 
-                        array(
-                                'name' => "Notakey service 2",
-                                'url' => 'https://core1.fid.notakey.com/',
-                                'service_id' => '2bcc897f-20ef-477b-b22d-18ad24a0424b',
-                            'service_logo' => 'https://core1.fid.notakey.com/_cimg/8c0b4f63-c1e9-4d1c-990e-8fc72740791c',
-
-                        ),
-                        array(
-                                'name' => "Notakey service 3",
-                                'url' => 'https://core1.fid.notakey.com/',
-                                'service_id' => '4d003b23-61aa-4b22-bd17-1d92bfe75dd5',
-                            'service_logo' => 'https://core1.fid.notakey.com/_cimg/8c0b4f63-c1e9-4d1c-990e-8fc72740791c',
-
+                        rray(
+                            'name' => 'Notakey service 2',
+                            'url' => 'https://api.mydomain.com/',
+                            'service_id' => '8c0b4f63-c1e9-4d1c-990e-892746367623',
+                            'client_id' => 'api-client-id',
+                            'client_secret' => 'client-secret',
+                            'service_logo' => '/userlogos/8c0b4f63-c1e9-4d1c-990e-8fc72740791c.png'
                         ),
         )
     )
