@@ -80,6 +80,7 @@ If running in NAA environment configure using cli.
 
 - As primary authentication source:
 
+```
     ntk cfg :sso.auth '{
         "notakey-nopass": {
             "module": "notakey:Process",
@@ -95,10 +96,11 @@ If running in NAA environment configure using cli.
                 -- define multiple if needed (e.g. using multiple services, one for internal users, another for externals)
             ]
         }' --json-input
-
+```
 
 - As additional factor to primary authentication:
 
+```
     ntk cfg :sso.base.\"authproc.idp\".\"90\" '{
         "class": "notakey:Filter",
         -- this defines which attribute stores users username as it will be sent to Notakey API, defaults to sAMAccountName
@@ -118,6 +120,9 @@ If running in NAA environment configure using cli.
             -- define multiple if needed (e.g. using multiple services, one for internal users, another for externals)
         ]
     }' --json-input
+```
 
-
+- Enables this module
+```
     ntk cfg :sso.modules '[..., "notakey"]' --json-input
+```
