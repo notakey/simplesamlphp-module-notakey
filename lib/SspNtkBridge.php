@@ -122,10 +122,11 @@ class sspmod_notakey_SspNtkBridge {
         $this->uid_attr = $config->getString ( 'user_id.attr', 'sAMAccountName');
         $this->d("Username will be taken from  ".$this->uid_attr." attribute");
 
+        // local remember user name options
         $this->rememberMeEnabled = $config->getBoolean('remember.username.enabled', false);
         $this->rememberMeChecked = $config->getBoolean('remember.username.checked', false);
 
-        // get the "remember me" config options
+        // get the "remember me" config options from global config
         $sspcnf = SimpleSAML_Configuration::getInstance();
         if(!$this->rememberMeEnabled)
             $this->rememberMeEnabled = $sspcnf->getBoolean('session.rememberme.enable', FALSE);
@@ -262,6 +263,16 @@ class sspmod_notakey_SspNtkBridge {
 
         $state ['notakey:service_id'] = $endpoint_id;
         $state ['notakey:application_id'] = $this->endpoints[$endpoint_id]['service_id'];
+
+        if (isset ( $this->endpoints [$endpoint_id]['stepup-source']) && !empty($this->endpoints [$endpoint_id]['stepup-source'])) {
+            $state ['notakey:stepUpRequired'] = true;
+            $state ['notakey:stepupAuthCompleted'] = false;
+            $state ['notakey:stepUpSource'] = $this->endpoints [$endpoint_id]['stepup-source'];
+            if(isset($this->endpoints [$endpoint_id]['stepup-duration'])){
+                $state ['notakey:stepUpDuration'] = $this->endpoints [$endpoint_id]['stepup-duration'];
+            }
+        }
+
 
         if (! $this->checkApiAccess ( $state )) {
             throw new SimpleSAML_Error_Exception ( 'Selected backend not available at the moment, please try later.' );
@@ -439,6 +450,139 @@ class sspmod_notakey_SspNtkBridge {
     public function __wakeup()
     {
 
+    }
+
+    public function stepupAuth(&$state){
+
+        if($this->hasValidStepupState($state['notakey:attr.username'], $state['notakey:service_id'])){
+            self::finalizeStepupAuth($state);
+        }
+
+        $as = SimpleSAML_Auth_Source::getById($state['notakey:stepUpSource']);
+
+        if ($as === NULL) {
+            throw new Exception('Invalid authentication source: ' . $state ['notakey:stepUpSource']);
+        }
+
+        $state['PrimaryLoginCompletedHandler'] = $state['LoginCompletedHandler'];
+        $state['LoginCompletedHandler'] = array(get_class(), 'stepupAuthCompleted');
+
+        try {
+            // TODO
+            // Stepup auth must now must derive from UserPass auth
+            $as->setForcedUsername($state['notakey:attr.username']);
+            $as->authenticate($state);
+        } catch (SimpleSAML_Error_Exception $e) {
+            SimpleSAML_Auth_State::throwException($state, $e);
+        } catch (Exception $e) {
+            $e = new SimpleSAML_Error_UnserializableException($e);
+            SimpleSAML_Auth_State::throwException($state, $e);
+        }
+
+        /* The previous function never returns, so this code is never
+        executed */
+        assert('FALSE');
+    }
+
+    public static function stepupAuthCompleted(&$state){
+        assert('is_array($state)');
+        assert('!array_key_exists("LogoutState", $state) || is_array($state["LogoutState"])');
+
+        self::setStepupCookie(
+            $state['notakey:service_id'],
+            $state['notakey:attr.username'],
+            $state['notakey:stepUpDuration']);
+
+        unset($state['LoginCompletedHandler']);
+        $state['LoginCompletedHandler'] = $state['PrimaryLoginCompletedHandler'];
+
+        self::finalizeStepupAuth($state);
+
+    }
+
+    private static function finalizeStepupAuth(&$state){
+        $state ['notakey:stepupAuthCompleted'] = true;
+
+        $stateId = SimpleSAML_Auth_State::saveState ( $state, self::STAGEID );
+
+        /*
+         * Get the URL of the authentication page.
+         *
+         * Here we use the getModuleURL function again, since the authentication page
+         * is also part of this module, but in a real example, this would likely be
+         * the absolute URL of the login page for the site.
+         */
+        $authPage = SimpleSAML\Module::getModuleURL ( 'notakey/resume' );
+
+        /*
+         * The redirect to the authentication page.
+         *
+         * Note the 'ReturnTo' parameter. This must most likely be replaced with
+         * the real name of the parameter for the login page.
+         */
+        SimpleSAML\Utils\HTTP::redirectTrustedURL ( $authPage, array (
+            'State' => $stateId
+        ) );
+
+        /*
+         * The redirect function never returns, so we never get this far.
+         */
+        assert ( 'FALSE' );
+}
+    private static function getCookieKey($source_id, $username){
+        return 'notakey-stepupxsa1-'.sha1($source_id.'|'.$username);
+    }
+
+    private static function getSessionId(){
+        return bin2hex(openssl_random_pseudo_bytes(16));
+    }
+
+    private static function getStore(){
+        $store = \SimpleSAML\Store::getInstance();
+        if ($store === false) {
+            throw new Exception('Missing persistent storage');
+        }
+
+        return $store;
+    }
+
+    private static function setStepupCookie($source_id, $username, $validityInterval){
+        self::d(__FUNCTION__.": called for user $username" );
+        $cookieKey = self::getCookieKey($source_id, $username);
+        $sessionHandler = \SimpleSAML\SessionHandler::getSessionHandler();
+        $params = $sessionHandler->getCookieParams();
+
+        $params['expire'] = (new DateTime('now'))->add(new DateInterval($validityInterval))->getTimestamp(); // $now = new DateTime('now'); $now->add($validityInterval)->getTimestamp();
+
+        $sessionId = self::getSessionId();
+        $store = self::getStore();
+        $store->set('notakey-stepup', $sessionId, array('username' => $username), $params['expire']);
+        \SimpleSAML\Utils\HTTP::setCookie($cookieKey, base64_encode(serialize($sessionId)), $params, FALSE);
+
+        return true;
+    }
+
+    private function hasValidStepupState($username, $service_id){
+        self::d(__FUNCTION__.": called for {$this->getAuthId()} user $username, service $service_id" );
+        $cookieKey = self::getCookieKey($service_id, $username);
+        if (isset($_COOKIE[$cookieKey])){
+            $sessionId = unserialize(base64_decode($_COOKIE[$cookieKey]));
+            $store = self::getStore();
+            $state = $store->get('notakey-stepup', $sessionId);
+
+            if(!$state){
+                SimpleSAML\Logger::warning(__FUNCTION__.": stepup login for {$this->getAuthId()} local state not found" );
+                return false;
+            }
+
+            if($state['username'] == $username){
+                self::d(__FUNCTION__.": stepup login for {$this->getAuthId()} found" );
+                return true;
+            }
+        }else{
+            self::d(__FUNCTION__.": stepup login for {$this->getAuthId()} [$cookieKey] not found" );
+        }
+        return false;
     }
 
 }

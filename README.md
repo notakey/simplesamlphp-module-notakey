@@ -25,7 +25,11 @@ Needs configuration in authsources listing all allowed backends
             'service_id' => '8c0b4f63-c1e9-4d1c-990e-12312312312',
             'client_id' => 'api-client-id',
             'client_secret' => 'client-secret',
-            'service_logo' => '/userlogos/8c0b4f63-c1e9-4d1c-990e-8fc72740791c.png'
+            'service_logo' => '/userlogos/8c0b4f63-c1e9-4d1c-990e-8fc72740791c.png',
+            // Source name from authsources
+            "stepup-source" =>  "ntk-radius",
+            // Valid for 1 year
+            "stepup-duration" => "P1Y"
         ),
         array(
             'name' => 'Notakey service 2',
