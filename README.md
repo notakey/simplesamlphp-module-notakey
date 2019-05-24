@@ -1,5 +1,4 @@
 # Notakey module for SimpleSAMLphp
-=============
 
 ## Configuration
 
