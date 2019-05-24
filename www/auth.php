@@ -82,7 +82,6 @@ if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete
 }
 
 // We are in a filter mode and only one endpoint exists
-
 if ($state['notakey:mode'] == 'filter' && count($state['notakey:bridge']->getServices()) == 1 && $authstate == 'none') {
     SimpleSAML\Logger::info("Auto submitting auth request in filter mode");
     $sv_list = array_keys($state['notakey:bridge']->getServices());
@@ -93,6 +92,17 @@ if ($state['notakey:mode'] == 'filter' && count($state['notakey:bridge']->getSer
     }
 }
 
+
+if (isset($state['forcedUsername'])){
+    SimpleSAML\Logger::info("Auto submitting auth request in pre-auth mode");
+    $sv_list = array_keys($state['notakey:bridge']->getServices());
+    $service_id = array_pop($sv_list);
+    $username = $state['forcedUsername'];
+
+    if($state['notakey:bridge']->isRememberMeEnabled() && $state['notakey:bridge']->isRememberMeChecked()){
+        $remember = 'yes';
+    }
+}
 // We get a form submission
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
