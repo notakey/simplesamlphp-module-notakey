@@ -28,15 +28,14 @@ Needs configuration in authsources listing all allowed backends
                             'client_secret' => 'client-secret',
                             'service_logo' => '/userlogos/8c0b4f63-c1e9-4d1c-990e-8fc72740791c.png'
                         ),
-
-                        rray(
+                    array(
                             'name' => 'Notakey service 2',
                             'url' => 'https://api.mydomain.com/',
                             'service_id' => '8c0b4f63-c1e9-4d1c-990e-892746367623',
                             'client_id' => 'api-client-id',
                             'client_secret' => 'client-secret',
                             'service_logo' => '/userlogos/8c0b4f63-c1e9-4d1c-990e-8fc72740791c.png'
-                        ),
+                        )
         )
     )
 ```
