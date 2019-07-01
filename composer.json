@@ -14,10 +14,5 @@
         "nategood/httpful": "^0.2.20",
         "mobiledetect/mobiledetectlib": "^2.8",
         "ziplr/php-qr-code": "^1.0"
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "2.0.x-dev"
-        }
     }
 }
