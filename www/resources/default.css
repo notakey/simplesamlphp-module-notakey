@@ -806,6 +806,7 @@ pre code {
 
 #footerTagline {
     clear: both;
+    margin-top: 2rem;
     text-align: center;
 }
 
