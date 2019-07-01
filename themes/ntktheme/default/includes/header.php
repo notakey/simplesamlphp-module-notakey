@@ -42,14 +42,14 @@ header('X-Frame-Options: SAMEORIGIN');
   <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0" />
-	<script type="text/javascript" src="/<?php echo $this->data['baseurlpath']; ?>/resources/script.js"></script>
+	<script type="text/javascript" src="/<?php echo $this->data['baseurlpath']; ?>/resources/script.js?ver=<?php echo urlencode($this->configuration->getVersion()); ?>"></script>
 
 	<meta name="robots" content="noindex, nofollow" />
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title><?php if(array_key_exists('header', $this->data)) { echo $this->data['header']; } else { echo 'simpleSAMLphp'; } ?></title>
 
-	<link rel="stylesheet" type="text/css" href="/<?php echo $this->data['baseurlpath']; ?>module/notakey/resources/default.css" />
+	<link rel="stylesheet" type="text/css" href="/<?php echo $this->data['baseurlpath']; ?>module/notakey/resources/default.css?ver=<?php echo urlencode($this->configuration->getVersion()); ?>" />
 	<link rel="icon" href="/<?php echo $this->data['baseurlpath']; ?>module/notakey/resources/favicon.png" sizes="32x32">
 	<link rel="icon" href="/<?php echo $this->data['baseurlpath']; ?>module/notakey/resources/favicon.png" sizes="192x192" />
 	<link rel="apple-touch-icon-precomposed" href="/<?php echo $this->data['baseurlpath']; ?>module/notakey/resources/favicon.png">
