@@ -129,7 +129,7 @@ class sspmod_notakey_NtkAsApi {
         $this->store = \SimpleSAML\Store::getInstance();
 
         if(is_null($this->store)){
-            throw new Exception ( 'Cannot initiate Store module');
+            throw new Exception ( 'Cannot get instance of Store module');
         }
 	}
 
