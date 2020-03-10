@@ -93,7 +93,7 @@ If running in NAA environment configure using cli.
                     "client_secret": "client-secret",
                     "service_logo": "/userlogos/somelogo.png"
                 },
-                -- define multiple if needed (e.g. using multiple services, one for internal users, another for externals)
+                -- define multiple if needed (e.g. using multiple services, one for internal users, another for external)
             ]
         }' --json-input
 ```
@@ -117,7 +117,7 @@ If running in NAA environment configure using cli.
                 "client_secret": "client-secret",
                 "service_logo": "/userlogos/somelogo.png"
             },
-            -- define multiple if needed (e.g. using multiple services, one for internal users, another for externals)
+            -- define multiple if needed (e.g. using multiple services, one for internal users, another for external)
         ]
     }' --json-input
 ```
