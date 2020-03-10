@@ -19,5 +19,10 @@
         "branch-alias": {
             "dev-master": "2.0.x-dev"
         }
+    },
+    "autoload": {
+        "psr-0": {
+            "SimpleSAML\\Modules\\Notakey\\": "lib"
+        }
     }
 }
