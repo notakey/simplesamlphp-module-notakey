@@ -129,9 +129,6 @@ if ($onLoad !== '') {
 <body<?php echo $onLoad; ?> data-languages="[]">
 
     <nav class="navbar navbar-toggleable-md navbar-dark">
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
         <?php
 
         $includeLanguageBar = TRUE;
@@ -203,7 +200,7 @@ if ($onLoad !== '') {
         ?>
         <!-- Brand -->
         <a class="navbar-brand mr-auto" href="/<?php echo $this->data['baseurlpath']; ?>">
-            <img src="/<?php echo $this->data['baseurlpath']; ?>module/notakey/resources/notakey-white-nobg.svg" height="30" alt="Notakey">
+            <img id="brandLogo" src="/<?php echo $this->data['baseurlpath']; ?>module/notakey/resources/notakey-white-nobg.svg" height="30" alt="Notakey">
         </a>
     </nav>
 
