@@ -19,11 +19,17 @@ class NotakeyThemeController implements TemplateControllerInterface
         if ($config->hasValue('favicon')) {
             $twig->addGlobal('favicon', $config->getValue('favicon'));
         }
+
         if ($config->hasValue('customcss')) {
             $twig->addGlobal('customcss', $config->getValue('customcss'));
         }
+
         if ($config->hasValue('webapptitle')) {
             $twig->addGlobal('webapptitle', $config->getValue('webapptitle'));
+        }
+
+        if ($config->hasValue('footer.tagline')) {
+            $twig->addGlobal('footer_tagline', $config->getValue('footer.tagline'));
         }
 
         $twig->addGlobal('version', $config->getVersion());
