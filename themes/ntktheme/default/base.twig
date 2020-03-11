@@ -34,7 +34,7 @@
 	<div class="container-fluid">
 		<div class="jumbotron jumbotron-fluid row">
 		  <div class="container">
-		    <h1 class="display-3">{% if webapptitle %}{{ webapptitle }}{% else %}SSO login{% endif %}</h1>
+		    <h1 class="display-3">{% if webapptitle %}{{ webapptitle | raw }}{% else %}SSO login{% endif %}</h1>
 		  </div>
 		</div>
     <div class="container">
