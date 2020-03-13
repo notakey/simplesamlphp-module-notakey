@@ -20,8 +20,6 @@ $query['k'] = $endpoint['service_id'];
 list($state_id, $session_data) = explode(":", $stateId, 2);
 $session = SimpleSAML_Session::getSessionFromRequest();
 
-assert('!is_null($$session)');
-
 $query['s'] = $service_id . ':' . $state_id . ':' . $session->getSessionId();
 
 if (isset($endpoint['profile_id'])) {

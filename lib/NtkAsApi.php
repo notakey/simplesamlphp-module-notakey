@@ -191,6 +191,11 @@ class sspmod_notakey_NtkAsApi
 
         if ($this->profile_id) {
             $p['profile'] = $this->profile_id;
+            // Load session details for state variable
+            $stateId = urldecode($_REQUEST['State']);
+            list($state_id, $session_data) = explode(":", $stateId, 2);
+            $session = SimpleSAML_Session::getSessionFromRequest();
+            $p['state'] = $this->service_id . ':' . $state_id . ':' . $session->getSessionId();
         } else {
             $p['action'] = sspmod_notakey_SspNtkBridge::auth_action;
             $p['description'] = $this->parseAuthMessage(sprintf(sspmod_notakey_SspNtkBridge::auth_description, $username));
