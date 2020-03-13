@@ -169,22 +169,6 @@ class sspmod_notakey_NtkAsApi
 
     public function authExt($username, $action = '', $description = '')
     {
-        $domain = '';
-
-        if (!empty($entity_id)) {
-            $uparam = parse_url($entity_id);
-            if (isset($uparam['host'])) {
-                $domain = $uparam['host'];
-            }
-        }
-
-        $attr_array = array(
-            array(),
-            array()
-        );
-
-
-
         $p = array(
             'username' => $username
         );
