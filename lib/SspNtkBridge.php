@@ -232,7 +232,7 @@ class sspmod_notakey_SspNtkBridge
     public function getService($endpoint_id)
     {
         if (!isset($this->endpoints[$endpoint_id])) {
-            throw new SimpleSAML_Error_Exception('No backend service not defined.');
+            throw new SimpleSAML_Error_Exception('Backend service not defined.');
         }
 
         return $this->endpoints[$endpoint_id];
