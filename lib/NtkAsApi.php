@@ -167,7 +167,7 @@ class sspmod_notakey_NtkAsApi
         return str_replace(array("\n", "\r", "\0", "\t"), '', $m);
     }
 
-    public function authExt($username, $action = '', $description = '')
+    public function authExt($username, $action = '', $description = '', $state = '')
     {
         $p = array(
             'username' => $username
@@ -175,11 +175,7 @@ class sspmod_notakey_NtkAsApi
 
         if ($this->profile_id) {
             $p['profile'] = $this->profile_id;
-            // Load session details for state variable
-            $stateId = urldecode($_REQUEST['State']);
-            list($state_id, $session_data) = explode(":", $stateId, 2);
-            $session = SimpleSAML_Session::getSessionFromRequest();
-            $p['state'] = urlencode($this->service_id . ':' . $state_id . ':' . $session->getSessionId());
+            $p['state'] = urlencode($state);
         } else {
             $p['action'] = sspmod_notakey_SspNtkBridge::auth_action;
             $p['description'] = $this->parseAuthMessage(sprintf(sspmod_notakey_SspNtkBridge::auth_description, $username));

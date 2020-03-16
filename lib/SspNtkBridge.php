@@ -350,6 +350,15 @@ class sspmod_notakey_SspNtkBridge
         return true;
     }
 
+    public function getCallbackState()
+    {
+        // Load session details for state variable
+        $stateId = urldecode($_REQUEST['State']);
+        list($state_id, $session_data) = explode(":", $stateId, 2);
+        $session = SimpleSAML_Session::getSessionFromRequest();
+        return $this->endpoint_id . ':' . $state_id . ':' . $session->getSessionId();
+    }
+
     public function startAuth($username, &$state, $remember = '')
     {
         if (!$this->checkLoopDetectionCookie()) {
@@ -359,7 +368,7 @@ class sspmod_notakey_SspNtkBridge
         $this->setRememberCookie($username, $remember);
         $this->setLoopDetectionCookie();
 
-        $areq =  $this->ntkapi()->authExt($username);
+        $areq =  $this->ntkapi()->authExt($username, '', '', $this->getCallbackState());
 
         if (isset($areq['uuid'])) {
             $this->setAuthState($state, $areq);

@@ -16,11 +16,7 @@ $query = array();
 $query['a'] = "a";
 $query['k'] = $endpoint['service_id'];
 
-// Load session details for state variable
-list($state_id, $session_data) = explode(":", $stateId, 2);
-$session = SimpleSAML_Session::getSessionFromRequest();
-
-$query['s'] = $service_id . ':' . $state_id . ':' . $session->getSessionId();
+$query['s'] = $state['notakey:bridge']->getCallbackState();
 
 if (isset($endpoint['profile_id'])) {
     $query['p'] = $endpoint['profile_id'];
