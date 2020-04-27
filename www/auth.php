@@ -25,7 +25,7 @@ $stateId = urldecode($_REQUEST['State']);
 
 $sid = SimpleSAML_Auth_State::parseStateID($stateId);
 
-SimpleSAML\Logger::info("SID data set to ".json_encode($sid));
+SimpleSAML\Logger::info("SID data set to " . json_encode($sid));
 
 if (!is_null($sid['url'])) {
     SimpleSAML\Utils\HTTP::checkURLAllowed($sid['url']);
@@ -35,23 +35,23 @@ if (!is_null($sid['url'])) {
 $state = SimpleSAML_Auth_State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
 // var_dump($state);
 
-$state['notakey:stageOneComplete'] = (isset($state['notakey:stageOneComplete']))?$state['notakey:stageOneComplete']:false;
+$state['notakey:stageOneComplete'] = (isset($state['notakey:stageOneComplete'])) ? $state['notakey:stageOneComplete'] : false;
 $username = $state['notakey:bridge']->getRememberUsername();
 
 // Username has been submitted
-if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete'] && isset($state['notakey:uuid'])) {
+if (isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete'] && isset($state['notakey:uuid'])) {
     try {
         $state['notakey:bridge']->setService($state);
-    } catch (Exception $e){
+    } catch (Exception $e) {
         $warning_messages[] = $e->getMessage();
     }
 
     $authstate = 'pending';
 
     SimpleSAML\Logger::info("Querying API for response status");
-    if($res = $state['notakey:bridge']->queryAuth($state['notakey:uuid'])){
+    if ($res = $state['notakey:bridge']->queryAuth($state['notakey:uuid'])) {
         // SimpleSAML\Logger::info("queryAuthApi response data set to ".print_r($res, true));
-        if(isset($res['response_type']) && $res['response_type'] == 'ApproveRequest'){
+        if (isset($res['response_type']) && $res['response_type'] == 'ApproveRequest') {
             SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} login OK");
 
             $state['notakey:bridge']->setUser($state, $res);
@@ -60,20 +60,20 @@ if(isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplete
             $authstate = 'success';
         }
 
-        if(isset($res['response_type']) && $res['response_type'] == 'DenyRequest'){
+        if (isset($res['response_type']) && $res['response_type'] == 'DenyRequest') {
             SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} denied login");
             $warning_messages[] = 'Authentication request denied by user, please try again.';
             $state['notakey:stageOneComplete'] = false;
             $authstate = 'denied';
         }
 
-        if($res['expired']){
+        if ($res['expired']) {
             SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} expired");
             $warning_messages[] = 'Authentication procedure expired, please try again.';
             $state['notakey:stageOneComplete'] = false;
             $authstate = 'expired';
         }
-    }else{
+    } else {
         SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} error");
         $warning_messages[] = 'Authentication procedure expired, please try again.';
         $state['notakey:stageOneComplete'] = false;
@@ -87,19 +87,19 @@ if ($state['notakey:mode'] == 'filter' && count($state['notakey:bridge']->getSer
     $sv_list = array_keys($state['notakey:bridge']->getServices());
     $service_id = array_pop($sv_list);
     $username = $state['notakey:bridge']->getUserId($state);
-    if($state['notakey:bridge']->isRememberMeEnabled() && $state['notakey:bridge']->isRememberMeChecked()){
+    if ($state['notakey:bridge']->isRememberMeEnabled() && $state['notakey:bridge']->isRememberMeChecked()) {
         $remember = 'yes';
     }
 }
 
 
-if (isset($state['forcedUsername'])){
+if (isset($state['forcedUsername'])) {
     SimpleSAML\Logger::info("Auto submitting auth request in pre-auth mode");
     $sv_list = array_keys($state['notakey:bridge']->getServices());
     $service_id = array_pop($sv_list);
     $username = $state['forcedUsername'];
 
-    if($state['notakey:bridge']->isRememberMeEnabled() && $state['notakey:bridge']->isRememberMeChecked()){
+    if ($state['notakey:bridge']->isRememberMeEnabled() && $state['notakey:bridge']->isRememberMeChecked()) {
         $remember = 'yes';
     }
 }
@@ -107,52 +107,52 @@ if (isset($state['forcedUsername'])){
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     SimpleSAML\Logger::info("Processing login request");
-    $username = (string)$_REQUEST['username'];
-    $service_id = isset($_REQUEST['service_id'])?$_REQUEST['service_id']:null;
-    if(isset($_REQUEST['remember_me']))
-        $remember = (string)$_REQUEST['remember_me'];
+    $username = (string) $_REQUEST['username'];
+    $service_id = isset($_REQUEST['service_id']) ? $_REQUEST['service_id'] : null;
+    if (isset($_REQUEST['remember_me']))
+        $remember = (string) $_REQUEST['remember_me'];
 }
 
-if($username != '' && !is_null($service_id)){
+if ($username != '' && !is_null($service_id)) {
     try {
         $state['notakey:bridge']->setService($state, $service_id);
-    } catch (Exception $e){
+    } catch (Exception $e) {
         $warning_messages[] = $e->getMessage();
         $apiTestOK = false;
     }
 
-    sspmod_notakey_SspNtkBridge::d(__FILE__.":".__LINE__." setService selected $service_id");
+    sspmod_notakey_SspNtkBridge::d(__FILE__ . ":" . __LINE__ . " setService selected $service_id");
     $req = null;
-    if($apiTestOK){
+    if ($apiTestOK) {
         try {
             $req = $state['notakey:bridge']->startAuth($username, $state, $remember);
-        } catch (Exception $e){
+        } catch (Exception $e) {
             $warning_messages[] = $e->getMessage();
         }
     }
 
-    sspmod_notakey_SspNtkBridge::d(__FILE__.":".__LINE__." Auth request created");
+    sspmod_notakey_SspNtkBridge::d(__FILE__ . ":" . __LINE__ . " Auth request created");
 
-    if($req){
+    if ($req) {
         // start new session token if auth request proceeds
         $stateId = SimpleSAML_Auth_State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
     }
 }
 
-$config = SimpleSAML_Configuration::getInstance();
+$config = \SimpleSAML\Configuration::getInstance();
 $services = $state['notakey:bridge']->getServices();
 
-if(count($services) > 1){
+if (count($services) > 1) {
     $t = new SimpleSAML_XHTML_Template($config, 'notakey:auth_multi.tpl.php');
     $t->data['service_list'] = $services;
-}else{
+} else {
     $t = new SimpleSAML_XHTML_Template($config, 'notakey:auth.tpl.php');
     $t->data['service'] = array_pop($services);
 }
 
 $detect = new Mobile_Detect;
 $t->data['mobile'] = true;
-if(!$detect->isMobile() && !$detect->isTablet()){
+if (!$detect->isMobile() && !$detect->isTablet()) {
     $t->data['mobile'] = false;
 }
 
@@ -169,13 +169,13 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
 
     function getQrAuthProgress(){
         $.ajax({
-            url: \''.$base_url.'module/notakey/qrstat?State='.urlencode($stateId).'&service_id=0\',
+            url: \'' . $base_url . 'module/notakey/qrstat?State=' . urlencode($stateId) . '&service_id=0\',
             cache : false,
             success: function(data) {
                 // $("#progress").html(data);
                 if(data == "approved" || data == "denied" || data == "expired") {
                     cancelQrQuery();
-                    location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
+                    location.href = \'' . $base_url . 'module/notakey/auth?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
                     return;
                 }
             },
@@ -194,24 +194,24 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
     var refreshTagQr = setInterval("getQrAuthProgress()", 3000);
 </script>';
 
-if($state['notakey:stageOneComplete']){
-        $t->data['js_block'] = $t->data['js_block'].'<script type="text/javascript">
+if ($state['notakey:stageOneComplete']) {
+    $t->data['js_block'] = $t->data['js_block'] . '<script type="text/javascript">
 
             function getProgress(){
                 $.ajax({
-                    url: \''.$base_url.'module/notakey/status?State='.urlencode($stateId).'\',
+                    url: \'' . $base_url . 'module/notakey/status?State=' . urlencode($stateId) . '\',
                     cache : false,
                     success: function(data) {
                         // $("#progress").html(data);
                         if(data == "approved" || data == "denied" || data == "expired") {
                             clearInterval(refreshTag);
-                            location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
+                            location.href = \'' . $base_url . 'module/notakey/auth?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
                               return;
                         }
                     },
                     error: function (err) {
                         console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
-                        location.href = \''.$base_url.'module/notakey/auth?State='.urlencode($stateId).'&ReturnTo=' . urlencode($returnTo).'\';
+                        location.href = \'' . $base_url . 'module/notakey/auth?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
                     }
                 });
 
@@ -230,7 +230,7 @@ $t->data['return_to'] = $returnTo;
 $t->data['warning_messages'] = $warning_messages;
 $t->data['selected_service'] = $service_id;
 $t->data['username_hint'] = $username;
-$t->data['qr_link'] = $base_url."module/notakey/qr?State=".urlencode($stateId)."&service_id=0";
+$t->data['qr_link'] = $base_url . "module/notakey/qr?State=" . urlencode($stateId) . "&service_id=0";
 
 if (array_key_exists('forcedUsername', $state)) {
     $t->data['username_hint'] = $state['forcedUsername'];
@@ -240,6 +240,3 @@ $t->data['rememberMeEnabled'] = $state['notakey:bridge']->isRememberMeEnabled();
 $t->data['rememberMeChecked'] = $state['notakey:bridge']->isRememberMeChecked();
 
 $t->show();
-
-
-

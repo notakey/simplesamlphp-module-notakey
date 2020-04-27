@@ -109,7 +109,7 @@ class sspmod_notakey_NtkAsApi
         }
 
         /* Parse configuration. */
-        $config = SimpleSAML_Configuration::loadFromArray($config, $location);
+        $config = \SimpleSAML\Configuration::loadFromArray($config, $location);
         $this->debug = $config->getBoolean('debug', FALSE);
 
         $this->base_url = $this->trimUrl($config->getString('url'));

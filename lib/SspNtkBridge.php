@@ -113,7 +113,7 @@ class sspmod_notakey_SspNtkBridge
         assert('is_array($config)');
         assert('is_string($location)');
 
-        $config = SimpleSAML_Configuration::loadFromArray($config);
+        $config = \SimpleSAML\Configuration::loadFromArray($config);
 
         $this->debug = $config->getBoolean('debug', FALSE);
         $this->d("Debugging enabled");
@@ -129,7 +129,7 @@ class sspmod_notakey_SspNtkBridge
         $this->rememberMeChecked = $config->getBoolean('remember.username.checked', false);
 
         // get the "remember me" config options from global config
-        $sspcnf = SimpleSAML_Configuration::getInstance();
+        $sspcnf = \SimpleSAML\Configuration::getInstance();
         if (!$this->rememberMeEnabled)
             $this->rememberMeEnabled = $sspcnf->getBoolean('session.rememberme.enable', FALSE);
 

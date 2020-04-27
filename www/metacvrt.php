@@ -3,7 +3,7 @@
 use SimpleSAML\Utils\Auth;
 use SimpleSAML\Utils\HTTP;
 
-$config = SimpleSAML_Configuration::getInstance();
+$config = \SimpleSAML\Configuration::getInstance();
 $session = SimpleSAML_Session::getSessionFromRequest();
 
 Auth::requireAdmin();
@@ -43,7 +43,7 @@ if (!empty($xmldata)) {
             // remove the entityDescriptor element because it is unused, and only makes the output harder to read
             unset($entityMetadata['entityDescriptor']);
 
-            $text .= json_encode($entityMetadata, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+            $text .= json_encode($entityMetadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         }
         $entities = $text;
     }
