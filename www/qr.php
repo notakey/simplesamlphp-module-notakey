@@ -1,13 +1,13 @@
 <?php
 
 if (!isset($_REQUEST['State'])) {
-    throw new SimpleSAML_Error_BadRequest('Missing "State" parameter.');
+    throw new  \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
 }
 
 $stateId = urldecode($_REQUEST['State']);
 $service_id = intval($_REQUEST['service_id']);
 
-$state = SimpleSAML_Auth_State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
+$state =  \SimpleSAML\Auth\State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
 $state['notakey:bridge']->setService($state, $service_id);
 $endpoint = $state['notakey:bridge']->getService($service_id);
 
@@ -52,8 +52,8 @@ def qr_code( root_url, session_id )
   end
 
   // $sid = explode(":", $stateId, 2);
-  // $session = SimpleSAML_Session::getSessionFromRequest();
-  // $state = $session->getData('SimpleSAML_Auth_State', $sid['id']);
+  // $session = \SimpleSAML\Session::getSessionFromRequest();
+  // $state = $session->getData(' \SimpleSAML\Auth\State', $sid['id']);
 
 
 */

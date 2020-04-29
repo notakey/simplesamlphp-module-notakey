@@ -1,11 +1,11 @@
 <?php
 
 if (!isset($_REQUEST['ReturnTo'])) {
-    throw new SimpleSAML_Error_BadRequest('Missing "ReturnTo" parameter.');
+    throw new  \SimpleSAML\Error\BadRequest('Missing "ReturnTo" parameter.');
 }
 
 if (!isset($_REQUEST['State'])) {
-    throw new SimpleSAML_Error_BadRequest('Missing "State" parameter.');
+    throw new  \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
 }
 
 $authstate = 'none';
@@ -23,7 +23,7 @@ $stateId = urldecode($_REQUEST['State']);
 
 // SimpleSAML\Logger::info("StateID set to $stateId");
 
-$sid = SimpleSAML_Auth_State::parseStateID($stateId);
+$sid =  \SimpleSAML\Auth\State::parseStateID($stateId);
 
 SimpleSAML\Logger::info("SID data set to " . json_encode($sid));
 
@@ -32,7 +32,7 @@ if (!is_null($sid['url'])) {
     SimpleSAML\Logger::info("URL set to {$sid['url']}");
 }
 
-$state = SimpleSAML_Auth_State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
+$state =  \SimpleSAML\Auth\State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
 // var_dump($state);
 
 $state['notakey:stageOneComplete'] = (isset($state['notakey:stageOneComplete'])) ? $state['notakey:stageOneComplete'] : false;
@@ -55,7 +55,7 @@ if (isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplet
             SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} login OK");
 
             $state['notakey:bridge']->setUser($state, $res);
-            $stateId = SimpleSAML_Auth_State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
+            $stateId =  \SimpleSAML\Auth\State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
             SimpleSAML\Utils\HTTP::redirectTrustedURL($returnTo);
             $authstate = 'success';
         }
@@ -135,7 +135,7 @@ if ($username != '' && !is_null($service_id)) {
 
     if ($req) {
         // start new session token if auth request proceeds
-        $stateId = SimpleSAML_Auth_State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
+        $stateId =  \SimpleSAML\Auth\State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
     }
 }
 

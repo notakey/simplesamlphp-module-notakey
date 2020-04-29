@@ -1,6 +1,6 @@
 <?php
 
-class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source
+class sspmod_notakey_Auth_Source_Process extends \SimpleSAML\Auth\Source
 {
 
 
@@ -18,7 +18,7 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source
 
         parent::__construct($info, $config);
 
-        $className = SimpleSAML\Module::resolveClass("sspmod_notakey_SspNtkBridge", 'SspNtkBridge');
+        $className = \SimpleSAML\Module::resolveClass("sspmod_notakey_SspNtkBridge", 'SspNtkBridge');
 
         $config['notakey.authsource'] = $this->authId;
 
@@ -81,7 +81,7 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source
          * and restores it in another location, and thus bypasses steps in
          * the authentication process.
          */
-        $stateId = SimpleSAML_Auth_State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
+        $stateId =  \SimpleSAML\Auth\State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
 
         /*
          * Now we generate a URL the user should return to after authentication.
@@ -126,34 +126,34 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source
          * it in the 'State' request parameter.
          */
         if (!isset($_REQUEST['State'])) {
-            throw new SimpleSAML_Error_BadRequest('Missing "State" parameter.');
+            throw new  \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
         }
 
         $stateId = (string) $_REQUEST['State'];
 
         // sanitize the input
-        $sid = SimpleSAML_Utilities::parseStateID($stateId);
+        $sid = \SimpleSAML\Auth\State::parseStateID($stateId);
         if (!is_null($sid['url'])) {
-            SimpleSAML_Utilities::checkURLAllowed($sid['url']);
+            \SimpleSAML\Utils\HTTP::checkURLAllowed($sid['url']);
         }
 
         /*
          * Once again, note the second parameter to the loadState function. This must
          * match the string we used in the saveState-call above.
          */
-        $state = SimpleSAML_Auth_State::loadState($stateId, 'notakey:Process');
+        $state =  \SimpleSAML\Auth\State::loadState($stateId, 'notakey:Process');
 
         /*
          * Now we have the $state-array, and can use it to locate the authentication
          * source.
          */
-        $source = SimpleSAML_Auth_Source::getById($state['notakey:AuthID']);
+        $source = \SimpleSAML\Auth\Source::getById($state['notakey:AuthID']);
         if ($source === NULL) {
             /*
              * The only way this should fail is if we remove or rename the authentication source
              * while the user is at the login page.
              */
-            throw new SimpleSAML_Error_Exception('Could not find authentication source with id ' . $state['notakey:AuthID']);
+            throw new  \SimpleSAML\Error\Exception('Could not find authentication source with id ' . $state['notakey:AuthID']);
         }
 
         /*
@@ -162,7 +162,7 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source
          * change config/authsources.php while an user is logging in.
          */
         if (!($source instanceof self)) {
-            throw new SimpleSAML_Error_Exception('Authentication source type changed.');
+            throw new  \SimpleSAML\Error\Exception('Authentication source type changed.');
         }
 
         /*
@@ -178,7 +178,7 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source
              * Here we simply throw an exception, but we could also redirect the user back to the
              * login page.
              */
-            throw new SimpleSAML_Error_Exception('User not authenticated after login page.');
+            throw new  \SimpleSAML\Error\Exception('User not authenticated after login page.');
         }
 
         /*
@@ -188,7 +188,7 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source
 
         $state['Attributes'] = $attributes;
 
-        SimpleSAML_Auth_Source::completeAuth($state);
+        \SimpleSAML\Auth\Source::completeAuth($state);
 
         /*
          * The completeAuth-function never returns, so we never get this far.

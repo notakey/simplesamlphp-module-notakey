@@ -9,62 +9,61 @@ $apiTestOK = false;
 $stateId = urldecode($_REQUEST['State']);
 
 if (!isset($_REQUEST['State'])) {
-	echo 'error';
-	throw new SimpleSAML_Error_BadRequest('Missing "State" parameter.');
-
+    echo 'error';
+    throw new  \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
 }
 
 // SimpleSAML\Logger::debug("StateID set to $stateId");
 
-$sid = SimpleSAML_Auth_State::parseStateID($stateId);
+$sid =  \SimpleSAML\Auth\State::parseStateID($stateId);
 
 // SimpleSAML\Logger::debug("SID data set to ".json_encode($sid));
 
-$state = SimpleSAML_Auth_State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
+$state =  \SimpleSAML\Auth\State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
 // var_dump($state);
 
 
-if(!isset($state['notakey:stageOneComplete']) || !$state['notakey:stageOneComplete']) {
-	sleep(10);
-	echo 'error';
-	// throw new SimpleSAML_Error_BadRequest('Invalid auth stage.');
-	exit();
+if (!isset($state['notakey:stageOneComplete']) || !$state['notakey:stageOneComplete']) {
+    sleep(10);
+    echo 'error';
+    // throw new  \SimpleSAML\Error\BadRequest('Invalid auth stage.');
+    exit();
 }
 
 try {
-	$state['notakey:bridge']->setService($state);
-} catch (Exception $e){
-	sleep(10);
+    $state['notakey:bridge']->setService($state);
+} catch (Exception $e) {
+    sleep(10);
     echo 'error';
-	SimpleSAML\Logger::error("Unable to set service ".$e->getMessage());
-	exit();
+    SimpleSAML\Logger::error("Unable to set service " . $e->getMessage());
+    exit();
 }
 
 
-if(!isset($state['notakey:uuid']) || !($res = $state['notakey:bridge']->queryAuth($state['notakey:uuid']))){
-	sleep(10);
+if (!isset($state['notakey:uuid']) || !($res = $state['notakey:bridge']->queryAuth($state['notakey:uuid']))) {
+    sleep(10);
     echo 'error';
     SimpleSAML\Logger::error("UUID query error: {$state['notakey:uuid']}");
-	exit();
+    exit();
 }
 
-SimpleSAML\Logger::info("queryAuth response data set to ".json_encode($res));
-if(isset($res['response_type']) && $res['response_type'] == 'ApproveRequest'){
+SimpleSAML\Logger::info("queryAuth response data set to " . json_encode($res));
+if (isset($res['response_type']) && $res['response_type'] == 'ApproveRequest') {
     echo 'approved';
     SimpleSAML\Logger::info("UUID {$state['notakey:uuid']} login confirmed");
-	exit();
+    exit();
 }
 
-if(isset($res['response_type']) && $res['response_type'] == 'DenyRequest'){
+if (isset($res['response_type']) && $res['response_type'] == 'DenyRequest') {
     echo 'denied';
-	SimpleSAML\Logger::info("UUID {$state['notakey:uuid']} login denied");
-	exit();
+    SimpleSAML\Logger::info("UUID {$state['notakey:uuid']} login denied");
+    exit();
 }
 
-if($res['expired']){
+if ($res['expired']) {
     echo 'expired';
     SimpleSAML\Logger::info("UUID {$state['notakey:uuid']} login expired");
-	exit();
+    exit();
 }
 
 echo 'noop';

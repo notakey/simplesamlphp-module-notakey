@@ -6,7 +6,7 @@
  * Filter for requesting the second factor auth using mobile device
  *
  */
-class sspmod_notakey_Auth_Process_Filter extends SimpleSAML_Auth_ProcessingFilter
+class sspmod_notakey_Auth_Process_Filter extends \SimpleSAML\Auth\ProcessingFilter
 {
     /*
 	 * NtkAsApi bridge reference placeholder
@@ -23,7 +23,7 @@ class sspmod_notakey_Auth_Process_Filter extends SimpleSAML_Auth_ProcessingFilte
         /*
 		if (array_key_exists('hiddenAttributes', $config)) {
 			if (!is_array($config['hiddenAttributes'])) {
-				throw new SimpleSAML_Error_Exception(
+				throw new \SimpleSAML\Error\Exception(
 						'Consent: hiddenAttributes must be an array. ' .
 						var_export($config['hiddenAttributes']) . ' given.'
 						);
@@ -32,7 +32,7 @@ class sspmod_notakey_Auth_Process_Filter extends SimpleSAML_Auth_ProcessingFilte
 		}
 		*/
 
-        $className = SimpleSAML\Module::resolveClass("sspmod_notakey_SspNtkBridge", 'SspNtkBridge');
+        $className = \SimpleSAML\Module::resolveClass("sspmod_notakey_SspNtkBridge", 'SspNtkBridge');
 
         // TODO
         // Use actual backend auth source ID
@@ -74,12 +74,12 @@ class sspmod_notakey_Auth_Process_Filter extends SimpleSAML_Auth_ProcessingFilte
 
         // Do not use notakey if disabled per source or destination
         if (isset($state['Source']['notakey.disable']) && self::checkDisable($state['Source']['notakey.disable'], $spEntityId)) {
-            SimpleSAML\Logger::debug('notakey: Notakey disabled for entity ' . $spEntityId . ' with IdP ' . $idpEntityId);
+            \SimpleSAML\Logger::debug('notakey: Notakey disabled for entity ' . $spEntityId . ' with IdP ' . $idpEntityId);
             return;
         }
 
         if (isset($state['Destination']['notakey.disable']) && self::checkDisable($state['Destination']['notakey.disable'], $idpEntityId)) {
-            SimpleSAML\Logger::debug('notakey: Notakey disabled for entity ' . $spEntityId . ' with IdP ' . $idpEntityId);
+            \SimpleSAML\Logger::debug('notakey: Notakey disabled for entity ' . $spEntityId . ' with IdP ' . $idpEntityId);
             return;
         }
 
@@ -95,7 +95,7 @@ class sspmod_notakey_Auth_Process_Filter extends SimpleSAML_Auth_ProcessingFilte
             isset($state['notakey:authtime']) &&
             (time() - $state['notakey:authtime']) < 60
         ) {
-            SimpleSAML\Logger::debug('notakey: Skipped secondary verification as we have valid auth');
+            \SimpleSAML\Logger::debug('notakey: Skipped secondary verification as we have valid auth');
             return;
         }
 
@@ -106,12 +106,12 @@ class sspmod_notakey_Auth_Process_Filter extends SimpleSAML_Auth_ProcessingFilte
         $state['notakey:mode']                = 'filter';
         $state['notakey:authtime']            = time();
 
-        $stateId  = SimpleSAML_Auth_State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
+        $stateId  = \SimpleSAML\Auth\State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
 
-        $returnTo = SimpleSAML\Module::getModuleURL('notakey/resume.php', array('State' => $stateId));
+        $returnTo = \SimpleSAML\Module::getModuleURL('notakey/resume.php', array('State' => $stateId));
 
-        $url = SimpleSAML\Module::getModuleURL('notakey/auth.php');
-        SimpleSAML\Utils\HTTP::redirectTrustedURL($url, array('State' => $stateId, 'ReturnTo' => $returnTo));
+        $url = \SimpleSAML\Module::getModuleURL('notakey/auth.php');
+        \SimpleSAML\Utils\HTTP::redirectTrustedURL($url, array('State' => $stateId, 'ReturnTo' => $returnTo));
 
         assert('FALSE');
     }

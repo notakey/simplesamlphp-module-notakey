@@ -4,7 +4,7 @@ use SimpleSAML\Utils\Auth;
 use SimpleSAML\Utils\HTTP;
 
 $config = \SimpleSAML\Configuration::getInstance();
-$session = SimpleSAML_Session::getSessionFromRequest();
+$session = \SimpleSAML\Session::getSessionFromRequest();
 
 Auth::requireAdmin();
 
@@ -16,7 +16,7 @@ if (!empty($_FILES['xmlfile']['tmp_name'])) {
 
 if (!empty($xmldata)) {
     @\SimpleSAML\Utils\XML::checkSAMLMessage($xmldata, 'saml-meta');
-    $entities = SimpleSAML_Metadata_SAMLParser::parseDescriptorsString($xmldata);
+    $entities = \SimpleSAML\Metadata\SAMLParser::parseDescriptorsString($xmldata);
 
     // get all metadata for the entities
     foreach ($entities as &$entity) {
@@ -52,7 +52,7 @@ if (!empty($xmldata)) {
     $output = array();
 }
 
-$template = new SimpleSAML_XHTML_Template($config, 'notakey:metacvrt.tpl.php');
+$template = new \SimpleSAML\XHTML\Template($config, 'notakey:metacvrt.tpl.php');
 $template->data['clipboard.js'] = true;
 $template->data['xmldata'] = $xmldata;
 $template->data['output'] = $output;
