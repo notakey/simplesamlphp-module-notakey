@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Hook to add link to the frontpage.
  *
  * @param array &$links  The links on the frontpage, split into sections.
  */
-function notakey_hook_frontpage(&$links) {
+function notakey_hook_frontpage(&$links)
+{
     assert('is_array($links)');
     assert('array_key_exists("links", $links)');
 

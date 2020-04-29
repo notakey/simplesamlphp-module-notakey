@@ -3,3 +3,4 @@ composer.lock
 enable
 disable
 .DS_Store
+locales/*/LC_MESSAGES/notakey.mo

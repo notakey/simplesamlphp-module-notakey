@@ -1,6 +1,7 @@
 <?php
 
-class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
+class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source
+{
 
 
     /*
@@ -10,11 +11,12 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
      */
     private $ntkbridge;
 
-    public function __construct($info, $config) {
-        assert ( 'is_array($info)' );
-        assert ( 'is_array($config)' );
+    public function __construct($info, $config)
+    {
+        assert('is_array($info)');
+        assert('is_array($config)');
 
-        parent::__construct ( $info, $config );
+        parent::__construct($info, $config);
 
         $className = SimpleSAML\Module::resolveClass("sspmod_notakey_SspNtkBridge", 'SspNtkBridge');
 
@@ -31,10 +33,11 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
      * @param
      *            array &$state Information about the current authentication.
      */
-    public function authenticate(&$state) {
-        assert ( 'is_array($state)' );
+    public function authenticate(&$state)
+    {
+        assert('is_array($state)');
 
-        $attributes = $this->ntkbridge->getUserAttrs ( $state );
+        $attributes = $this->ntkbridge->getUserAttrs($state);
         if ($attributes !== NULL) {
             /*
              * The user is already authenticated.
@@ -42,8 +45,8 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
              * Add the users attributes to the $state-array, and return control
              * to the authentication process.
              */
-            SimpleSAML\Logger::info("authenticate: User attributes found " . print_r ( $attributes, true ) );
-            $state ['Attributes'] = $attributes;
+            SimpleSAML\Logger::info("authenticate: User attributes found " . print_r($attributes, true));
+            $state['Attributes'] = $attributes;
             return;
         }
 
@@ -51,7 +54,7 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
          * The user isn't authenticated. We therefore need to
          * send the user to the login page.
          */
-        SimpleSAML\Logger::info("authenticate: User not authenticated" );
+        SimpleSAML\Logger::info("authenticate: User not authenticated");
         /*
          * First we add the identifier of this authentication source
          * to the state array, so that we know where to resume.
@@ -63,7 +66,7 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
         $state['notakey:authtime']            = time();
         $state['notakey:stepUpRequired']      = false;
 
-        SimpleSAML\Logger::info("authenticate: AuthID is " . $this->authId );
+        SimpleSAML\Logger::info("authenticate: AuthID is " . $this->authId);
 
         /*
          * We need to save the $state-array, so that we can resume the
@@ -78,16 +81,16 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
          * and restores it in another location, and thus bypasses steps in
          * the authentication process.
          */
-        $stateId = SimpleSAML_Auth_State::saveState ( $state, sspmod_notakey_SspNtkBridge::STAGEID );
+        $stateId = SimpleSAML_Auth_State::saveState($state, sspmod_notakey_SspNtkBridge::STAGEID);
 
         /*
          * Now we generate a URL the user should return to after authentication.
          * We assume that whatever authentication page we send the user to has an
          * option to return the user to a specific page afterwards.
          */
-        $returnTo = SimpleSAML\Module::getModuleURL ( 'notakey/resume', array (
-                'State' => $stateId
-        ) );
+        $returnTo = SimpleSAML\Module::getModuleURL('notakey/resume.php', array(
+            'State' => $stateId
+        ));
 
         /*
          * Get the URL of the authentication page.
@@ -96,7 +99,7 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
          * is also part of this module, but in a real example, this would likely be
          * the absolute URL of the login page for the site.
          */
-        $authPage = SimpleSAML\Module::getModuleURL ( 'notakey/auth' );
+        $authPage = SimpleSAML\Module::getModuleURL('notakey/auth.php');
 
         /*
          * The redirect to the authentication page.
@@ -104,52 +107,53 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
          * Note the 'ReturnTo' parameter. This must most likely be replaced with
          * the real name of the parameter for the login page.
          */
-        SimpleSAML\Utils\HTTP::redirectTrustedURL ( $authPage, array (
-                'ReturnTo' => $returnTo,
-                'State' => $stateId
-        ) );
+        SimpleSAML\Utils\HTTP::redirectTrustedURL($authPage, array(
+            'ReturnTo' => $returnTo,
+            'State' => $stateId
+        ));
 
         /*
          * The redirect function never returns, so we never get this far.
          */
-        assert ( 'FALSE' );
+        assert('FALSE');
     }
 
-    public static function resume() {
+    public static function resume()
+    {
 
         /*
          * First we need to restore the $state-array. We should have the identifier for
          * it in the 'State' request parameter.
          */
-        if (! isset ( $_REQUEST ['State'] )) {
-            throw new SimpleSAML_Error_BadRequest ( 'Missing "State" parameter.' );
+        if (!isset($_REQUEST['State'])) {
+            throw new SimpleSAML_Error_BadRequest('Missing "State" parameter.');
         }
 
-        $stateId = ( string ) $_REQUEST ['State'];
+        $stateId = (string) $_REQUEST['State'];
 
         // sanitize the input
-        $sid = SimpleSAML_Utilities::parseStateID ( $stateId );
-        if (! is_null ( $sid ['url'] )) {
-            SimpleSAML_Utilities::checkURLAllowed ( $sid ['url'] );
+        $sid = SimpleSAML_Utilities::parseStateID($stateId);
+        if (!is_null($sid['url'])) {
+            SimpleSAML_Utilities::checkURLAllowed($sid['url']);
         }
 
         /*
          * Once again, note the second parameter to the loadState function. This must
          * match the string we used in the saveState-call above.
          */
-        $state = SimpleSAML_Auth_State::loadState ( $stateId, 'notakey:Process' );
+        $state = SimpleSAML_Auth_State::loadState($stateId, 'notakey:Process');
 
         /*
          * Now we have the $state-array, and can use it to locate the authentication
          * source.
          */
-        $source = SimpleSAML_Auth_Source::getById ( $state ['notakey:AuthID'] );
+        $source = SimpleSAML_Auth_Source::getById($state['notakey:AuthID']);
         if ($source === NULL) {
             /*
              * The only way this should fail is if we remove or rename the authentication source
              * while the user is at the login page.
              */
-            throw new SimpleSAML_Error_Exception ( 'Could not find authentication source with id ' . $state ['notakey:AuthID'] );
+            throw new SimpleSAML_Error_Exception('Could not find authentication source with id ' . $state['notakey:AuthID']);
         }
 
         /*
@@ -157,8 +161,8 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
          * user was at the authentication page. This can only happen if we
          * change config/authsources.php while an user is logging in.
          */
-        if (! ($source instanceof self)) {
-            throw new SimpleSAML_Error_Exception ( 'Authentication source type changed.' );
+        if (!($source instanceof self)) {
+            throw new SimpleSAML_Error_Exception('Authentication source type changed.');
         }
 
         /*
@@ -166,7 +170,7 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
          *
          * First we check that the user is acutally logged in, and didn't simply skip the login page.
          */
-        $attributes = sspmod_notakey_SspNtkBridge::getUserAttrs ( $state );
+        $attributes = sspmod_notakey_SspNtkBridge::getUserAttrs($state);
         if ($attributes === NULL) {
             /*
              * The user isn't authenticated.
@@ -174,7 +178,7 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
              * Here we simply throw an exception, but we could also redirect the user back to the
              * login page.
              */
-            throw new SimpleSAML_Error_Exception ( 'User not authenticated after login page.' );
+            throw new SimpleSAML_Error_Exception('User not authenticated after login page.');
         }
 
         /*
@@ -182,14 +186,14 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
          * paused it in the authenticate()-function above.
          */
 
-        $state ['Attributes'] = $attributes;
+        $state['Attributes'] = $attributes;
 
-        SimpleSAML_Auth_Source::completeAuth ( $state );
+        SimpleSAML_Auth_Source::completeAuth($state);
 
         /*
          * The completeAuth-function never returns, so we never get this far.
          */
-        assert ( 'FALSE' );
+        assert('FALSE');
     }
 
     /**
@@ -199,8 +203,9 @@ class sspmod_notakey_Auth_Source_Process extends SimpleSAML_Auth_Source {
      * @param
      *            array &$state The logout state array.
      */
-    public function logout(&$state) {
-        assert ( 'is_array($state)' );
+    public function logout(&$state)
+    {
+        assert('is_array($state)');
 
         /* TODO
          * Check if we need to hook in here for stats retrieval

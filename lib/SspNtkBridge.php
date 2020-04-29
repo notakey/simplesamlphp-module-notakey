@@ -547,7 +547,7 @@ class sspmod_notakey_SspNtkBridge
          * is also part of this module, but in a real example, this would likely be
          * the absolute URL of the login page for the site.
          */
-        $authPage = SimpleSAML\Module::getModuleURL('notakey/resume');
+        $authPage = SimpleSAML\Module::getModuleURL('notakey/resume.php');
 
         /*
          * The redirect to the authentication page.

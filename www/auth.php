@@ -143,10 +143,10 @@ $config = \SimpleSAML\Configuration::getInstance();
 $services = $state['notakey:bridge']->getServices();
 
 if (count($services) > 1) {
-    $t = new SimpleSAML_XHTML_Template($config, 'notakey:auth_multi.tpl.php');
+    $t = new \SimpleSAML\XHTML\Template($config, 'notakey:auth_multi');
     $t->data['service_list'] = $services;
 } else {
-    $t = new SimpleSAML_XHTML_Template($config, 'notakey:auth.tpl.php');
+    $t = new \SimpleSAML\XHTML\Template($config, 'notakey:auth');
     $t->data['service'] = array_pop($services);
 }
 
