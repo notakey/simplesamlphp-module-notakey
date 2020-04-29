@@ -137,7 +137,7 @@ class sspmod_notakey_SspNtkBridge
             $this->rememberMeChecked = $sspcnf->getBoolean('session.rememberme.checked', FALSE);
 
         if (count($this->endpoints) == 0) {
-            throw new SimpleSAML_Error_Exception('Missing or invalid API endpoint configuration, check authsources.');
+            throw new \SimpleSAML\Error\Exception('Missing or invalid API endpoint configuration, check authsources.');
         }
     }
 
@@ -169,7 +169,7 @@ class sspmod_notakey_SspNtkBridge
     public function getUserId(&$state)
     {
         if (!isset($state['Attributes'][$this->uid_attr])) {
-            throw new SimpleSAML_Error_Exception('Missing username attribute in Auth source. Please check filter configuration.');
+            throw new \SimpleSAML\Error\Exception('Missing username attribute in Auth source. Please check filter configuration.');
         }
 
         return $state['Attributes'][$this->uid_attr][0];
@@ -183,7 +183,7 @@ class sspmod_notakey_SspNtkBridge
     public function setUser(&$state, $res)
     {
         if (!isset($res['id'])) {
-            SimpleSAML\Logger::info("setUser: Remote user not set, \$res->id empty");
+            \SimpleSAML\Logger::info("setUser: Remote user not set, \$res->id empty");
             return false;
         }
 
@@ -216,7 +216,7 @@ class sspmod_notakey_SspNtkBridge
             $state['notakey:attr.keytoken'] = $res['keytoken'];
         }
 
-        SimpleSAML\Logger::info("setUser: Populated user $user / {$res['full_name']} / UUID : {$res['uuid']} attribute data");
+        \SimpleSAML\Logger::info("setUser: Populated user $user / {$res['full_name']} / UUID : {$res['uuid']} attribute data");
 
         //var_dump($state);
         // exit;
@@ -232,7 +232,7 @@ class sspmod_notakey_SspNtkBridge
     public function getService($endpoint_id)
     {
         if (!isset($this->endpoints[$endpoint_id])) {
-            throw new SimpleSAML_Error_Exception('Backend service not defined.');
+            throw new \SimpleSAML\Error\Exception('Backend service not defined.');
         }
 
         return $this->endpoints[$endpoint_id];
@@ -246,7 +246,7 @@ class sspmod_notakey_SspNtkBridge
     public function setService(&$state, $endpoint_id = null)
     {
         if (count($this->endpoints) == 0) {
-            throw new SimpleSAML_Error_Exception('No backend services defined.');
+            throw new \SimpleSAML\Error\Exception('No backend services defined.');
             return false;
         }
 
@@ -254,24 +254,24 @@ class sspmod_notakey_SspNtkBridge
 
         if (is_null($endpoint_id)) {
             if (isset($state['notakey:service_id']) && isset($this->endpoints[$state['notakey:service_id']])) {
-                SimpleSAML\Logger::info("setService: Backend {$this->endpoints[$state['notakey:service_id']]['name']} ({$state['notakey:service_id']}) selected");
+                \SimpleSAML\Logger::info("setService: Backend {$this->endpoints[$state['notakey:service_id']]['name']} ({$state['notakey:service_id']}) selected");
                 $this->endpoint_id = $state['notakey:service_id'];
                 return true;
             }
 
-            throw new SimpleSAML_Error_Exception('Invalid session state.');
+            throw new \SimpleSAML\Error\Exception('Invalid session state.');
             return false;
         }
 
         if (!isset($this->endpoints[$endpoint_id])) {
-            SimpleSAML\Logger::info("setService: Service ID $endpoint_id undefined");
-            throw new SimpleSAML_Error_Exception('Please select your service provider.');
+            \SimpleSAML\Logger::info("setService: Service ID $endpoint_id undefined");
+            throw new \SimpleSAML\Error\Exception('Please select your service provider.');
             return false;
         }
 
         $this->endpoint_id = $endpoint_id;
 
-        SimpleSAML\Logger::info("setService: New backend {$this->endpoints[$endpoint_id]['name']} ($endpoint_id) selected");
+        \SimpleSAML\Logger::info("setService: New backend {$this->endpoints[$endpoint_id]['name']} ($endpoint_id) selected");
 
         $state['notakey:service_id'] = $endpoint_id;
         $state['notakey:application_id'] = $this->endpoints[$endpoint_id]['service_id'];
@@ -287,7 +287,7 @@ class sspmod_notakey_SspNtkBridge
 
 
         if (!$this->checkApiAccess($state)) {
-            throw new SimpleSAML_Error_Exception('Selected backend not available at the moment, please try later.');
+            throw new \SimpleSAML\Error\Exception('Selected backend not available at the moment, please try later.');
             return false;
         }
 
@@ -296,11 +296,11 @@ class sspmod_notakey_SspNtkBridge
 
     public function getRememberUsername()
     {
-        SimpleSAML\Logger::debug("getRememberUsername: called for {$this->getAuthId()}");
+        \SimpleSAML\Logger::debug("getRememberUsername: called for {$this->getAuthId()}");
 
         if ($this->isRememberMeEnabled()) {
             if (isset($_COOKIE[$this->getAuthId() . '-username'])) {
-                SimpleSAML\Logger::info("getRememberUsername: Preset username " . $_COOKIE[$this->getAuthId() . '-username'] . " for {$this->getAuthId()}");
+                \SimpleSAML\Logger::info("getRememberUsername: Preset username " . $_COOKIE[$this->getAuthId() . '-username'] . " for {$this->getAuthId()}");
                 return $_COOKIE[$this->getAuthId() . '-username'];
             }
         }
@@ -310,14 +310,14 @@ class sspmod_notakey_SspNtkBridge
 
     private function setRememberCookie($username, $remember = '')
     {
-        SimpleSAML\Logger::debug("setRememberCookie: called with " . $username . " $remember for {$this->getAuthId()}");
+        \SimpleSAML\Logger::debug("setRememberCookie: called with " . $username . " $remember for {$this->getAuthId()}");
         if ($this->isRememberMeEnabled()) {
             $sessionHandler = \SimpleSAML\SessionHandler::getSessionHandler();
             $params = $sessionHandler->getCookieParams();
             $params['expire'] = time();
             $params['expire'] += (strtolower($remember) == 'yes') ? 31536000 : -300;
             \SimpleSAML\Utils\HTTP::setCookie($this->getAuthId() . '-username', $username, $params, FALSE);
-            SimpleSAML\Logger::info("setRememberCookie: Stored username " . $username . " for {$this->getAuthId()}");
+            \SimpleSAML\Logger::info("setRememberCookie: Stored username " . $username . " for {$this->getAuthId()}");
         }
 
         return true;
@@ -325,23 +325,23 @@ class sspmod_notakey_SspNtkBridge
 
     public function checkLoopDetectionCookie()
     {
-        SimpleSAML\Logger::debug("checkLoopDetectionCookie: called for {$this->getAuthId()}");
+        \SimpleSAML\Logger::debug("checkLoopDetectionCookie: called for {$this->getAuthId()}");
 
         if (isset($_COOKIE[$this->getAuthId() . '-loop-detection'])) {
             $time = unserialize(base64_decode($_COOKIE[$this->getAuthId() . '-loop-detection']));
             if ((time() - $time) < 5) {
-                throw new SimpleSAML_Error_Exception('Login loop detected, seems like there is a problem with configuration. Please contact your support.');
+                throw new \SimpleSAML\Error\Exception('Login loop detected, seems like there is a problem with configuration. Please contact your support.');
                 return false;
             }
         } else {
-            SimpleSAML\Logger::debug("checkLoopDetectionCookie: previous login for {$this->getAuthId()} not found");
+            \SimpleSAML\Logger::debug("checkLoopDetectionCookie: previous login for {$this->getAuthId()} not found");
         }
         return true;
     }
 
     private function setLoopDetectionCookie()
     {
-        SimpleSAML\Logger::debug("setLoopDetectionCookie: called for {$this->getAuthId()}");
+        \SimpleSAML\Logger::debug("setLoopDetectionCookie: called for {$this->getAuthId()}");
         $sessionHandler = \SimpleSAML\SessionHandler::getSessionHandler();
         $params = $sessionHandler->getCookieParams();
         $params['expire'] = time() + 600;
@@ -355,7 +355,7 @@ class sspmod_notakey_SspNtkBridge
         // Load session details for state variable
         $stateId = urldecode($_REQUEST['State']);
         list($state_id, $session_data) = explode(":", $stateId, 2);
-        $session = SimpleSAML_Session::getSessionFromRequest();
+        $session = \SimpleSAML\Session::getSessionFromRequest();
         return $this->endpoint_id . ':' . $state_id . ':' . $session->getSessionId();
     }
 
@@ -398,7 +398,7 @@ class sspmod_notakey_SspNtkBridge
         $res = $this->ntkapi()->serviceName($state);
 
         if ($res) {
-            SimpleSAML\Logger::info("checkApiAccess: Connectivity to $res verified");
+            \SimpleSAML\Logger::info("checkApiAccess: Connectivity to $res verified");
             $state['notakey:service_name'] = $res;
             return true;
         }
@@ -449,10 +449,10 @@ class sspmod_notakey_SspNtkBridge
         }
 
         if (empty($this->endpoints[$this->endpoint_id]['url']) || empty($this->endpoints[$this->endpoint_id]['service_id'])) {
-            throw new SimpleSAML_Error_Exception('Missing or invalid API endpoint configuration, check authsources.php.');
+            throw new \SimpleSAML\Error\Exception('Missing or invalid API endpoint configuration, check authsources.php.');
         }
 
-        $className = SimpleSAML\Module::resolveClass('sspmod_notakey_NtkAsApi', 'NtkAsApi');
+        $className = \SimpleSAML\Module::resolveClass('sspmod_notakey_NtkAsApi', 'NtkAsApi');
 
         $this->ntk_api = new $className($this->endpoints[$this->endpoint_id], 'sspmod_notakey_SspNtkBridge::loadNtkApi');
 
@@ -467,12 +467,12 @@ class sspmod_notakey_SspNtkBridge
     {
 
         //if($this->debug)
-        SimpleSAML\Logger::debug($msg);
+        \SimpleSAML\Logger::debug($msg);
     }
 
     public static function l($msg)
     {
-        SimpleSAML\Logger::info($msg);
+        \SimpleSAML\Logger::info($msg);
     }
 
     public function __sleep()
@@ -491,7 +491,7 @@ class sspmod_notakey_SspNtkBridge
             self::finalizeStepupAuth($state);
         }
 
-        $as = SimpleSAML_Auth_Source::getById($state['notakey:stepUpSource']);
+        $as = \SimpleSAML\Auth\Source::getById($state['notakey:stepUpSource']);
 
         if ($as === NULL) {
             throw new Exception('Invalid authentication source: ' . $state['notakey:stepUpSource']);
@@ -505,11 +505,11 @@ class sspmod_notakey_SspNtkBridge
             // Stepup auth must now must derive from UserPass auth
             $as->setForcedUsername($state['notakey:attr.username']);
             $as->authenticate($state);
-        } catch (SimpleSAML_Error_Exception $e) {
-            SimpleSAML_Auth_State::throwException($state, $e);
+        } catch (\SimpleSAML\Error\Exception $e) {
+            \SimpleSAML\Auth\State::throwException($state, $e);
         } catch (Exception $e) {
-            $e = new SimpleSAML_Error_UnserializableException($e);
-            SimpleSAML_Auth_State::throwException($state, $e);
+            $e = new \SimpleSAML\Error\UnserializableException($e);
+            \SimpleSAML\Auth\State::throwException($state, $e);
         }
 
         /* The previous function never returns, so this code is never
@@ -538,7 +538,7 @@ class sspmod_notakey_SspNtkBridge
     {
         $state['notakey:stepupAuthCompleted'] = true;
 
-        $stateId = SimpleSAML_Auth_State::saveState($state, self::STAGEID);
+        $stateId = \SimpleSAML\Auth\State::saveState($state, self::STAGEID);
 
         /*
          * Get the URL of the authentication page.
@@ -547,7 +547,7 @@ class sspmod_notakey_SspNtkBridge
          * is also part of this module, but in a real example, this would likely be
          * the absolute URL of the login page for the site.
          */
-        $authPage = SimpleSAML\Module::getModuleURL('notakey/resume.php');
+        $authPage = \SimpleSAML\Module::getModuleURL('notakey/resume.php');
 
         /*
          * The redirect to the authentication page.
@@ -555,7 +555,7 @@ class sspmod_notakey_SspNtkBridge
          * Note the 'ReturnTo' parameter. This must most likely be replaced with
          * the real name of the parameter for the login page.
          */
-        SimpleSAML\Utils\HTTP::redirectTrustedURL($authPage, array(
+        \SimpleSAML\Utils\HTTP::redirectTrustedURL($authPage, array(
             'State' => $stateId
         ));
 
@@ -612,7 +612,7 @@ class sspmod_notakey_SspNtkBridge
             $state = $store->get('notakey-stepup', $sessionId);
 
             if (!$state) {
-                SimpleSAML\Logger::warning(__FUNCTION__ . ": stepup login for {$this->getAuthId()} local state not found");
+                \SimpleSAML\Logger::warning(__FUNCTION__ . ": stepup login for {$this->getAuthId()} local state not found");
                 return false;
             }
 
