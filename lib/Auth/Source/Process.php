@@ -126,7 +126,7 @@ class sspmod_notakey_Auth_Source_Process extends \SimpleSAML\Auth\Source
          * it in the 'State' request parameter.
          */
         if (!isset($_REQUEST['State'])) {
-            throw new  \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
+            throw new \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
         }
 
         $stateId = (string) $_REQUEST['State'];

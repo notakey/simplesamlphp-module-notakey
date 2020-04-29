@@ -1,7 +1,7 @@
 <?php
 
 if (!isset($_REQUEST['State'])) {
-    throw new  \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
+    throw new \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
 }
 
 $stateId = urldecode($_REQUEST['State']);

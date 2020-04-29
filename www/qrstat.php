@@ -10,7 +10,7 @@ $stateId = urldecode($_REQUEST['State']);
 
 if (!isset($_REQUEST['State'])) {
     echo 'error';
-    throw new  \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
+    throw new \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
 }
 
 $service_id = intval($_REQUEST['service_id']);

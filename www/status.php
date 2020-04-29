@@ -10,7 +10,7 @@ $stateId = urldecode($_REQUEST['State']);
 
 if (!isset($_REQUEST['State'])) {
     echo 'error';
-    throw new  \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
+    throw new \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
 }
 
 // SimpleSAML\Logger::debug("StateID set to $stateId");
@@ -26,7 +26,7 @@ $state =  \SimpleSAML\Auth\State::loadState($stateId, sspmod_notakey_SspNtkBridg
 if (!isset($state['notakey:stageOneComplete']) || !$state['notakey:stageOneComplete']) {
     sleep(10);
     echo 'error';
-    // throw new  \SimpleSAML\Error\BadRequest('Invalid auth stage.');
+    // throw new \SimpleSAML\Error\BadRequest('Invalid auth stage.');
     exit();
 }
 

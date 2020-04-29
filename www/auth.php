@@ -1,11 +1,11 @@
 <?php
 
 if (!isset($_REQUEST['ReturnTo'])) {
-    throw new  \SimpleSAML\Error\BadRequest('Missing "ReturnTo" parameter.');
+    throw new \SimpleSAML\Error\BadRequest('Missing "ReturnTo" parameter.');
 }
 
 if (!isset($_REQUEST['State'])) {
-    throw new  \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
+    throw new \SimpleSAML\Error\BadRequest('Missing "State" parameter.');
 }
 
 $authstate = 'none';
