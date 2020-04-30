@@ -497,6 +497,10 @@ class sspmod_notakey_SspNtkBridge
             throw new Exception('Invalid authentication source: ' . $state['notakey:stepUpSource']);
         }
 
+        if (!is_subclass_of($as, 'SimpleSAML\Module\core\Auth\UserPassBase')) {
+            throw new Exception('Invalid authentication source: ' . $state['notakey:stepUpSource'] . ', must derive from UserPassBase');
+        }
+
         $state['PrimaryLoginCompletedHandler'] = $state['LoginCompletedHandler'];
         $state['LoginCompletedHandler'] = array(get_class(), 'stepupAuthCompleted');
 
