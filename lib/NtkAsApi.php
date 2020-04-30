@@ -8,7 +8,7 @@
  */
 
 /*
-$className = SimpleSAML\Module::resolveClass(
+$className = \SimpleSAML\Module::resolveClass(
 		$config[0],
 		'Consent_Store',
 		'sspmod_notakey_NtkAsApi'

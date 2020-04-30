@@ -88,7 +88,7 @@ class sspmod_notakey_Auth_Source_Process extends \SimpleSAML\Auth\Source
          * We assume that whatever authentication page we send the user to has an
          * option to return the user to a specific page afterwards.
          */
-        $returnTo = SimpleSAML\Module::getModuleURL('notakey/resume.php', array(
+        $returnTo = \SimpleSAML\Module::getModuleURL('notakey/resume.php', array(
             'State' => $stateId
         ));
 
@@ -99,7 +99,7 @@ class sspmod_notakey_Auth_Source_Process extends \SimpleSAML\Auth\Source
          * is also part of this module, but in a real example, this would likely be
          * the absolute URL of the login page for the site.
          */
-        $authPage = SimpleSAML\Module::getModuleURL('notakey/auth.php');
+        $authPage = \SimpleSAML\Module::getModuleURL('notakey/auth.php');
 
         /*
          * The redirect to the authentication page.

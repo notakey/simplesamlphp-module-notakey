@@ -11,7 +11,7 @@ function notakey_hook_frontpage(&$links)
     assert('array_key_exists("links", $links)');
 
     $links['federation']['notakeymetacvrt'] = [
-        'href' => SimpleSAML\Module::getModuleURL('notakey/metacvrt.php'),
+        'href' => \SimpleSAML\Module::getModuleURL('notakey/metacvrt.php'),
         'text' => [
             'en' => 'XML metadata to JSON converter'
         ],
