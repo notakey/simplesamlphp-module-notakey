@@ -17,7 +17,7 @@ if (is_null($session)) {
     throw new \SimpleSAML\Error\BadRequest('Session cannot be initialized');
 }
 
-$state_str = $session->getData('SimpleSAML_Auth_State', $auth_state);
+$state_str = $session->getData('\SimpleSAML\Auth\State', $auth_state);
 
 if (is_null($state_str)) {
     throw new \SimpleSAML\Error\BadRequest('State cannot be initialized');
@@ -34,7 +34,7 @@ $state['notakey:stageOneComplete'] = true;
 $state['notakey:qruuid'] = $auth_uuid;
 
 $state_str = serialize($state);
-$session->setData('SimpleSAML_Auth_State', $state[\SimpleSAML\Auth\State::ID], $state_str);
+$session->setData('\SimpleSAML\Auth\State', $state[\SimpleSAML\Auth\State::ID], $state_str);
 
 
 
