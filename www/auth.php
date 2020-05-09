@@ -169,13 +169,13 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
 
     function getQrAuthProgress(){
         $.ajax({
-            url: \'' . $base_url . 'module/notakey/qrstat?State=' . urlencode($stateId) . '&service_id=0\',
+            url: \'' . $base_url . 'module/notakey/qrstat.php?State=' . urlencode($stateId) . '&service_id=0\',
             cache : false,
             success: function(data) {
                 // $("#progress").html(data);
                 if(data == "approved" || data == "denied" || data == "expired") {
                     cancelQrQuery();
-                    location.href = \'' . $base_url . 'module/notakey/auth?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
+                    location.href = \'' . $base_url . 'module/notakey/auth.php?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
                     return;
                 }
             },
@@ -199,19 +199,19 @@ if ($state['notakey:stageOneComplete']) {
 
             function getProgress(){
                 $.ajax({
-                    url: \'' . $base_url . 'module/notakey/status?State=' . urlencode($stateId) . '\',
+                    url: \'' . $base_url . 'module/notakey/status.php?State=' . urlencode($stateId) . '\',
                     cache : false,
                     success: function(data) {
                         // $("#progress").html(data);
                         if(data == "approved" || data == "denied" || data == "expired") {
                             clearInterval(refreshTag);
-                            location.href = \'' . $base_url . 'module/notakey/auth?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
+                            location.href = \'' . $base_url . 'module/notakey/auth.php?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
                               return;
                         }
                     },
                     error: function (err) {
                         console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
-                        location.href = \'' . $base_url . 'module/notakey/auth?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
+                        location.href = \'' . $base_url . 'module/notakey/auth.php?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
                     }
                 });
 
