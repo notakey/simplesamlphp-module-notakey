@@ -521,7 +521,7 @@ class sspmod_notakey_SspNtkBridge
         assert('FALSE');
     }
 
-    public static function stepupAuthCompleted(&$state)
+    public static function stepupAuthCompleted($state)
     {
         assert('is_array($state)');
         assert('!array_key_exists("LogoutState", $state) || is_array($state["LogoutState"])');
