@@ -216,6 +216,11 @@ class sspmod_notakey_SspNtkBridge
             $state['notakey:attr.keytoken'] = $res['keytoken'];
         }
 
+        // Groups present since v2.20.0
+        if (isset($res['groups'])) {
+            $state['notakey:attr.groups'] = $res['groups'];
+        }
+
         \SimpleSAML\Logger::info("setUser: Populated user $user / {$res['full_name']} / UUID : {$res['uuid']} attribute data");
 
         //var_dump($state);
@@ -436,6 +441,10 @@ class sspmod_notakey_SspNtkBridge
 
         if (isset($state['notakey:attr.domain'])) {
             $attributes['domain'] = array($state['notakey:attr.domain']);
+        }
+
+        if (isset($state['notakey:attr.groups'])) {
+            $attributes['groups'] = $state['notakey:attr.groups'];
         }
 
         return $attributes;
