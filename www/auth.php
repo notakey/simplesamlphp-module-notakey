@@ -17,7 +17,7 @@ $remember = '';
 
 $returnTo = SimpleSAML\Utils\HTTP::checkURLAllowed($_REQUEST['ReturnTo']);
 
-SimpleSAML\Logger::info("ReturnTo URL verified");
+SimpleSAML\Logger::debug("ReturnTo URL verified");
 
 $stateId = urldecode($_REQUEST['State']);
 
@@ -25,15 +25,14 @@ $stateId = urldecode($_REQUEST['State']);
 
 $sid =  \SimpleSAML\Auth\State::parseStateID($stateId);
 
-SimpleSAML\Logger::info("SID data set to " . json_encode($sid));
+SimpleSAML\Logger::debug("SID data set to " . json_encode($sid));
 
 if (!is_null($sid['url'])) {
     SimpleSAML\Utils\HTTP::checkURLAllowed($sid['url']);
-    SimpleSAML\Logger::info("URL set to {$sid['url']}");
+    SimpleSAML\Logger::debug("URL set to {$sid['url']}");
 }
 
 $state =  \SimpleSAML\Auth\State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
-// var_dump($state);
 
 $state['notakey:stageOneComplete'] = (isset($state['notakey:stageOneComplete'])) ? $state['notakey:stageOneComplete'] : false;
 $username = $state['notakey:bridge']->getRememberUsername();
