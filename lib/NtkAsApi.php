@@ -148,7 +148,7 @@ class sspmod_notakey_NtkAsApi
             // TODO
             // Check if we have this error handling in place
             if (isset($p['status']) && $p['status'] == 'error') {
-                throw new Exception($res->error_message);
+                // throw new Exception($res->error_message);
                 return false;
             }
 
