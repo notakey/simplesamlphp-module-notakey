@@ -74,7 +74,7 @@ class sspmod_notakey_NtkAsApi
     /**
      * Persistance layer using KV
      *
-     * @var string
+     * @var object
      */
     private $store = null;
 
