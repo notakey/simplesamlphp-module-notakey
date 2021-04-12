@@ -190,7 +190,7 @@ class sspmod_notakey_NtkAsApi
             }
         }
 
-        $res = $this->callAuthenticatedApi('auth', 'POST', $p);
+        $res = $this->callAuthenticatedApi('auth', 'POST', $p, true);
 
         // $this->l(print_r($res, true));
 
@@ -351,21 +351,21 @@ class sspmod_notakey_NtkAsApi
         return true;
     }
 
-    private function callAuthenticatedApi($method, $mode = 'GET', $params = null)
+    private function callAuthenticatedApi($method, $mode = 'GET', $params = null, $ignore404 = false)
     {
         if (!$this->accessTokenValid()) {
             $this->acquireAccessToken();
         }
 
-        return $this->callApi($method, $mode, $params, $this->getAccessTokenHeader());
+        return $this->callApi($method, $mode, $params, $this->getAccessTokenHeader(), $ignore404);
     }
 
-    private function callApi($method, $mode = 'GET', $params = null, $headers = array())
+    private function callApi($method, $mode = 'GET', $params = null, $headers = array(), $ignore404 = false)
     {
-        return $this->callProtoApi($this->trimUrl($this->api) . ($method == '' ? '' : '/' . $method), $mode, $params, $headers);
+        return $this->callProtoApi($this->trimUrl($this->api) . ($method == '' ? '' : '/' . $method), $mode, $params, $headers, $ignore404);
     }
 
-    private function callProtoApi($url, $mode = 'GET', $params = null, $headers = array())
+    private function callProtoApi($url, $mode = 'GET', $params = null, $headers = array(), $ignore404 = false)
     {
         if ($mode == 'GET') {
             try {
@@ -395,6 +395,10 @@ class sspmod_notakey_NtkAsApi
 
         $this->l("callApi: $url returned code $response->code");
         if ($response->code >= 200 && $response->code < 300) {
+            return $response->body;
+        }
+
+        if ($ignore404 && $response->code == 404) {
             return $response->body;
         }
 

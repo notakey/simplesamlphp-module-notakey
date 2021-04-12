@@ -373,9 +373,14 @@ class sspmod_notakey_SspNtkBridge
         $this->setRememberCookie($username, $remember);
         $this->setLoopDetectionCookie();
 
-        $areq =  $this->ntkapi()->authExt($username, '', '', $this->getCallbackState());
+        $areq = $this->ntkapi()->authExt($username, '', '', $this->getCallbackState());
 
         if (isset($areq['uuid'])) {
+            $this->setAuthState($state, $areq);
+            return true;
+        } else if (isset($areq['errors'])) {
+            // request for non-existant user
+            $areq['uuid'] = 'nonexistant';
             $this->setAuthState($state, $areq);
             return true;
         }

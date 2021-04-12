@@ -23,7 +23,7 @@ $stateId = urldecode($_REQUEST['State']);
 
 // SimpleSAML\Logger::info("StateID set to $stateId");
 
-$sid =  \SimpleSAML\Auth\State::parseStateID($stateId);
+$sid = \SimpleSAML\Auth\State::parseStateID($stateId);
 
 SimpleSAML\Logger::debug("SID data set to " . json_encode($sid));
 
@@ -32,7 +32,7 @@ if (!is_null($sid['url'])) {
     SimpleSAML\Logger::debug("URL set to {$sid['url']}");
 }
 
-$state =  \SimpleSAML\Auth\State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
+$state = \SimpleSAML\Auth\State::loadState($stateId, sspmod_notakey_SspNtkBridge::STAGEID);
 
 $state['notakey:stageOneComplete'] = (isset($state['notakey:stageOneComplete'])) ? $state['notakey:stageOneComplete'] : false;
 $username = $state['notakey:bridge']->getRememberUsername();
@@ -108,8 +108,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     SimpleSAML\Logger::info("Processing login request");
     $username = (string) $_REQUEST['username'];
     $service_id = isset($_REQUEST['service_id']) ? $_REQUEST['service_id'] : null;
-    if (isset($_REQUEST['remember_me']))
+    if (isset($_REQUEST['remember_me'])) {
         $remember = (string) $_REQUEST['remember_me'];
+    }
 }
 
 if ($username != '' && !is_null($service_id)) {
