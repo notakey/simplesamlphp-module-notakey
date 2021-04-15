@@ -139,35 +139,12 @@ class sspmod_notakey_NtkAsApi
         }
     }
 
-    public function auth($username, $action = '', $description = '')
-    {
-        $p = $this->authExt($username, $action, $description);
-
-        if ($p) {
-
-            // TODO
-            // Check if we have this error handling in place
-            if (isset($p['status']) && $p['status'] == 'error') {
-                // throw new Exception($res->error_message);
-                return false;
-            }
-
-            if (isset($p['uuid'])) {
-                $this->l("Login for user $username sent OK");
-                return $p['uuid'];
-            }
-        }
-
-        $this->l("Login request for user $username failed");
-        return false;
-    }
-
     public function parseAuthMessage($m)
     {
         return str_replace(array("\n", "\r", "\0", "\t"), '', $m);
     }
 
-    public function authExt($username, $action = '', $description = '', $state = '')
+    public function authExt($username, $action = '', $description = '', $state = '', $auth_timeout = 300)
     {
         $p = array(
             'username' => $username
@@ -188,6 +165,8 @@ class sspmod_notakey_NtkAsApi
             if (!empty($description)) {
                 $p['description'] = $this->parseAuthMessage(str_replace(array('{}'), $username, $description));
             }
+
+            $p['ttl_seconds'] = $auth_timeout;
         }
 
         $res = $this->callAuthenticatedApi('auth', 'POST', $p, true);

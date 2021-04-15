@@ -100,6 +100,14 @@ class sspmod_notakey_SspNtkBridge
      */
     private $authId;
 
+    /**
+     * Timeout in seconds for authentication requests
+     *
+     * @var int
+     */
+
+    private $auth_timeout = 300;
+
     private $ntk_api = null;
 
     /**
@@ -123,6 +131,8 @@ class sspmod_notakey_SspNtkBridge
         $this->d("Loaded " . count($this->endpoints) . " NTK endpoints");
         $this->uid_attr = $config->getString('user_id.attr', 'sAMAccountName');
         $this->d("Username will be taken from  " . $this->uid_attr . " attribute");
+        $this->auth_timeout = $config->getInteger('auth_timeout', 300);
+        $this->d("Auth timeout is  " . $this->auth_timeout . " seconds");
 
         // local remember user name options
         $this->rememberMeEnabled = $config->getBoolean('remember.username.enabled', false);
@@ -373,7 +383,7 @@ class sspmod_notakey_SspNtkBridge
         $this->setRememberCookie($username, $remember);
         $this->setLoopDetectionCookie();
 
-        $areq = $this->ntkapi()->authExt($username, '', '', $this->getCallbackState());
+        $areq = $this->ntkapi()->authExt($username, '', '', $this->getCallbackState(), $this->auth_timeout);
 
         if (isset($areq['uuid'])) {
             $this->setAuthState($state, $areq);
@@ -381,6 +391,8 @@ class sspmod_notakey_SspNtkBridge
         } else if (isset($areq['errors'])) {
             // request for non-existant user
             $areq['uuid'] = 'nonexistant';
+            $areq['created_at'] = time();
+            $areq['expires_at'] = time() + $this->auth_timeout;
             $this->setAuthState($state, $areq);
             return true;
         }
@@ -396,10 +408,19 @@ class sspmod_notakey_SspNtkBridge
         $state['notakey:attr.expires_at'] = $areq['expires_at'];
     }
 
-    public function queryAuth($uuid)
+    public function queryAuth($state)
     {
-        $s = $this->ntkapi()->query($uuid);
+        $uuid = $state['notakey:uuid'];
+        if ($uuid == 'nonexistant') {
+            $s = ['expired' => false];
 
+            if ($state['notakey:attr.expires_at'] < time()) {
+                $s['expired'] = true;
+            }
+            return $s;
+        }
+
+        $s = $this->ntkapi()->query($uuid);
         return $s;
     }
 
@@ -491,7 +512,7 @@ class sspmod_notakey_SspNtkBridge
 
     public function __sleep()
     {
-        return array('endpoint_id', 'debug',  'authId', 'stripdomain', 'endpoints', 'uid_attr', 'rememberMeEnabled', 'rememberMeChecked');
+        return array('endpoint_id', 'debug', 'authId', 'stripdomain', 'endpoints', 'uid_attr', 'rememberMeEnabled', 'rememberMeChecked');
     }
 
     public function __wakeup()

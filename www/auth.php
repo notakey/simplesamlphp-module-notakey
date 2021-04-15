@@ -48,7 +48,7 @@ if (isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplet
     $authstate = 'pending';
 
     SimpleSAML\Logger::info("Querying API for response status");
-    if ($res = $state['notakey:bridge']->queryAuth($state['notakey:uuid'])) {
+    if ($res = $state['notakey:bridge']->queryAuth($state)) {
         // SimpleSAML\Logger::info("queryAuthApi response data set to ".print_r($res, true));
         if (isset($res['response_type']) && $res['response_type'] == 'ApproveRequest') {
             SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} login OK");
@@ -181,7 +181,8 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
             },
             error: function (err) {
                 console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
-            }
+            },
+            timeout: 2500
         });
     }
 
@@ -206,13 +207,14 @@ if ($state['notakey:stageOneComplete']) {
                         if(data == "approved" || data == "denied" || data == "expired") {
                             clearInterval(refreshTag);
                             location.href = \'' . $base_url . 'module/notakey/auth.php?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
-                              return;
+                            return;
                         }
                     },
                     error: function (err) {
                         console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
-                        location.href = \'' . $base_url . 'module/notakey/auth.php?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
-                    }
+                        // location.href = \'' . $base_url . 'module/notakey/auth.php?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
+                    },
+                    timeout: 1900
                 });
 
             }
