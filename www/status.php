@@ -40,7 +40,7 @@ try {
 }
 
 
-if (!isset($state['notakey:uuid']) || !($res = $state['notakey:bridge']->queryAuth($state))) {
+if (!isset($state['notakey:uuid']) || !($res = $state['notakey:bridge']->queryAuth($state, $state['notakey:uuid']))) {
     sleep(10);
     echo 'error';
     SimpleSAML\Logger::error("UUID query error: {$state['notakey:uuid']}");

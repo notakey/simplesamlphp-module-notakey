@@ -408,9 +408,8 @@ class sspmod_notakey_SspNtkBridge
         $state['notakey:attr.expires_at'] = $areq['expires_at'];
     }
 
-    public function queryAuth($state)
+    public function queryAuth(&$state, $uuid)
     {
-        $uuid = $state['notakey:uuid'];
         if ($uuid == 'nonexistant') {
             $s = ['expired' => false];
 

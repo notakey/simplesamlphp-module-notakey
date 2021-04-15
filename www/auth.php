@@ -48,7 +48,7 @@ if (isset($state['notakey:stageOneComplete']) && $state['notakey:stageOneComplet
     $authstate = 'pending';
 
     SimpleSAML\Logger::info("Querying API for response status");
-    if ($res = $state['notakey:bridge']->queryAuth($state)) {
+    if ($res = $state['notakey:bridge']->queryAuth($state, $state['notakey:uuid'])) {
         // SimpleSAML\Logger::info("queryAuthApi response data set to ".print_r($res, true));
         if (isset($res['response_type']) && $res['response_type'] == 'ApproveRequest') {
             SimpleSAML\Logger::info("API request UUID {$state['notakey:uuid']} login OK");
@@ -174,25 +174,20 @@ $t->data['js_qr_check'] = '<script type="text/javascript">
             success: function(data) {
                 // $("#progress").html(data);
                 if(data == "approved" || data == "denied" || data == "expired") {
-                    cancelQrQuery();
-                    location.href = \'' . $base_url . 'module/notakey/auth.php?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
-                    return;
+                    $(location).attr("href", \'' . $base_url . 'module/notakey/auth.php?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\');
+                }else{
+                    setTimeout("getQrAuthProgress()", 3010);
                 }
             },
             error: function (err) {
                 console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
+                setTimeout("getQrAuthProgress()", 3020);
             },
-            timeout: 2500
+            timeout: 10000
         });
     }
 
-    function cancelQrQuery(){
-        if(refreshTagQr){
-            clearInterval(refreshTagQr);
-        }
-    }
-
-    var refreshTagQr = setInterval("getQrAuthProgress()", 3000);
+    setTimeout("getQrAuthProgress()", 1000);
 </script>';
 
 if ($state['notakey:stageOneComplete']) {
@@ -205,21 +200,20 @@ if ($state['notakey:stageOneComplete']) {
                     success: function(data) {
                         // $("#progress").html(data);
                         if(data == "approved" || data == "denied" || data == "expired") {
-                            clearInterval(refreshTag);
-                            location.href = \'' . $base_url . 'module/notakey/auth.php?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
-                            return;
+                            $(location).attr("href", \'' . $base_url . 'module/notakey/auth.php?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\');
+                        }else{
+                            setTimeout("getProgress()", 2010);
                         }
                     },
                     error: function (err) {
                         console.log("AJAX error in request: " + JSON.stringify(err, null, 2));
-                        // location.href = \'' . $base_url . 'module/notakey/auth.php?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\';
+                        $(location).attr("href", \'' . $base_url . 'module/notakey/auth.php?State=' . urlencode($stateId) . '&ReturnTo=' . urlencode($returnTo) . '\');
                     },
-                    timeout: 1900
+                    timeout: 10000
                 });
-
             }
 
-            var refreshTag = setInterval("getProgress()", 2000);
+            setTimeout("getProgress()", 500);
         </script>';
 }
 
