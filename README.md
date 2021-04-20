@@ -86,22 +86,21 @@ If running in NAA environment configure using cli.
 - As primary authentication source:
 
 ```shell
-    ntk cfg :sso.auth '{
-        "notakey-nopass": {
-            "module": "notakey:Process",
-            "endpoints": [
-                {
-                    "name": "Notakey",
-                    "url": "https://mfa.mydomain.com/",
-                    "service_id": "bcd05d09-40cb-4965-8d94-3142546576",
-                    "client_id": "api-client-id",
-                    "client_secret": "client-secret",
-                    "service_logo": "/userlogos/somelogo.png",
-                    "profile_id": "bcd05d09-40cb-4965-8d94-3142546576" // if using authentication profile, specify it here
-                },
-                // define multiple if needed (e.g. using multiple services, one for internal users, another for external)
-            ]
-        }' --json-input
+    ntk cfg :sso.auth.\"notakey-nopass\" '{
+        "module": "notakey:Process",
+        "endpoints": [
+            {
+                "name": "Notakey",
+                "url": "https://mfa.mydomain.com/",
+                "service_id": "bcd05d09-40cb-4965-8d94-3142546576",
+                "client_id": "api-client-id",
+                "client_secret": "client-secret",
+                "service_logo": "/userlogos/somelogo.png",
+                "profile_id": "bcd05d09-40cb-4965-8d94-3142546576" // if using authentication profile, specify it here
+            },
+            // define multiple if needed (e.g. using multiple services, one for internal users, another for external)
+        ]
+    }' --json-input
 ```
 
 - As additional factor to primary authentication:
