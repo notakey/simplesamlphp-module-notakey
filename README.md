@@ -81,7 +81,7 @@ This will allow use of localized authentication request messages according to us
 
 ## Notakey Authentication Appliance
 
-If running in NAA environment configure using cli.
+If running in NAA environment, configure using cli.
 
 - As primary authentication source:
 
