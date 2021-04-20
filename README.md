@@ -76,7 +76,7 @@ In base config:
 ### Customizing authentication requests
 
 To customize authentication requests you can use authentication profiles.
-These are configured in Notakey Autehntication Appliance administration dashboard for specific service.
+These are configured in Notakey Authentication Appliance administration dashboard for specific service.
 This will allow use of localized authentication request messages according to user's language and to adjust authentication request timeout values and security requirements.
 
 ## Notakey Authentication Appliance
