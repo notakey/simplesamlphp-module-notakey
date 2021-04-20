@@ -6,7 +6,7 @@
 
 Needs configuration in authsources listing all allowed backends
 
-```shell
+```php
 'notakey-auth' => array(
     'notakey:Process',
     // if username remember me is enabled
@@ -52,7 +52,7 @@ In sequential logins on other SPs only mobile authentication will be verified.
 
 In base config:
 
-```
+```php
 "authproc.idp" => array(
     "90" => array(
         "class" => "notakey:Filter",
