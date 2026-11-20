@@ -9,20 +9,26 @@
         "email": "ingemars.asmanis@notakey.com"
     }],
     "require": {
-        "php": ">=5.5.9",
-        "simplesamlphp/composer-module-installer": "^1.0",
-        "nategood/httpful": "^0.2.20",
-        "mobiledetect/mobiledetectlib": "^2.8",
-        "drbiko/php-qr-code": "^1.0"
+        "php": "^8.3",
+        "simplesamlphp/composer-module-installer": "^1.7",
+        "simplesamlphp/simplesamlphp": "^2.5",
+        "symfony/http-client": "^7.4",
+        "mobiledetect/mobiledetectlib": "^4.8",
+        "chillerlan/php-qrcode": "^6.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "simplesamlphp/composer-module-installer": true
+        }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0.x-dev"
+            "dev-master": "3.0.x-dev"
         }
     },
     "autoload": {
-        "psr-0": {
-            "SimpleSAML\\Modules\\Notakey\\": "lib"
+        "psr-4": {
+            "SimpleSAML\\Module\\notakey\\": "src/"
         }
     }
 }

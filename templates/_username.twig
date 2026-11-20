@@ -1,0 +1,18 @@
+<div class="loginFormUsername">
+    <input type="text" value="{{ username_hint }}" name="username" id="username"
+           placeholder="{{ 'Username'|trans }}" tabindex="1" maxlength="100" autocomplete="username" autofocus>
+</div>
+{% if rememberMeEnabled %}
+    <div class="loginFormRememberMe">
+        <label for="remember_me">
+            <input type="checkbox" id="remember_me" tabindex="3" name="remember_me" value="Yes" {{ rememberMeChecked ? 'checked' }}>
+            <small>{{ 'Remember me'|trans }}</small>
+        </label>
+    </div>
+{% endif %}
+<div class="regularSubmit">
+    <input type="submit" class="ntk-submit" id="regularsubmit" tabindex="4"
+           value="{{ 'Login'|trans }}" data-processing="{{ 'Processing...'|trans }}">
+</div>
+<input type="hidden" name="ReturnTo" value="{{ return_to }}">
+<input type="hidden" name="State" value="{{ state_id }}">

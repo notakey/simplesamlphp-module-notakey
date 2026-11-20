@@ -1,16 +1,35 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2020-04-29 10:28+0300\n"
-"PO-Revision-Date: 2020-04-29 10:28+0300\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"Project-Id-Version: notakey\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.3\n"
-"X-Poedit-Basepath: ../../..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-KeywordsList: ->t(..)\n"
-"X-Poedit-SearchPath-0: .\n"
+
+msgid "Notakey authentication"
+msgstr "Notakey authentication"
+
+msgid "Authentication request"
+msgstr "Authentication request"
+
+msgid "Have your mobile device handy to approve authentication request in mobile app."
+msgstr "Have your mobile device handy to approve authentication request in mobile app."
+
+msgid "Please select your authentication provider, by clicking on appropriate logo"
+msgstr "Please select your authentication provider, by clicking on appropriate logo"
+
+msgid "Please enter your username"
+msgstr "Please enter your username"
+
+msgid "Authentication request created successfully. Please proceed with authentication on your mobile device."
+msgstr "Authentication request created successfully. Please proceed with authentication on your mobile device."
+
+msgid "Authentication request denied by user, please try again."
+msgstr "Authentication request denied by user, please try again."
+
+msgid "Authentication procedure expired, please try again."
+msgstr "Authentication procedure expired, please try again."
+
+msgid "XML metadata to JSON converter"
+msgstr "XML metadata to JSON converter"

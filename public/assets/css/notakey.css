@@ -1,0 +1,59 @@
+/* Notakey authentication pages */
+
+.ntk-message {
+    background: #f5f5f5;
+    border-left: 4px solid #b8002c;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+}
+
+.ntk-message h3 {
+    margin-top: 0.5rem;
+}
+
+.ntk-select-message {
+    padding-top: 15px;
+}
+
+.ntk-service-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.service-selector {
+    cursor: pointer;
+}
+
+.service-selector img {
+    max-height: 80px;
+    max-width: 200px;
+    vertical-align: middle;
+}
+
+#spLoginLogo img {
+    max-height: 100px;
+    max-width: 300px;
+}
+
+#loginForm .loginFormUsername,
+#loginForm .loginFormRememberMe,
+#loginForm .regularSubmit {
+    margin: 0.5rem 0;
+}
+
+#qrCodeView {
+    margin-top: 1rem;
+}
+
+.ntk-progress-status {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+#progresstxt {
+    max-width: 30rem;
+}

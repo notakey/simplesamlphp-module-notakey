@@ -1,0 +1,6 @@
+{% for err in warning_messages %}
+    <div class="message-box error ntk-message">
+        <h3>{{ 'An error has occurred'|trans }}</h3>
+        <p>{{ err|trans }}</p>
+    </div>
+{% endfor %}
