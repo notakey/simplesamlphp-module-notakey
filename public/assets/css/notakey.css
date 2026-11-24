@@ -57,3 +57,10 @@
 #progresstxt {
     max-width: 30rem;
 }
+
+@media only screen and (max-width: 480px) {
+    .ntk-progress-status {
+        flex-direction: column;
+        gap: 0;
+    }
+}
