@@ -239,11 +239,9 @@ class NtkAsApi
             'scope' => 'urn:notakey:auth',
         ];
 
-        $h = [
-            'Authorization' => 'Basic ' . base64_encode($this->api_client . ':' . $this->api_secret),
-        ];
-
-        $res = $this->callProtoApi($this->base_url . '/api/token', 'POST', $p, $h);
+        // Client credentials are sent only in request body, sending them
+        // also in Authorization header would use two auth methods (RFC 6749 2.3)
+        $res = $this->callProtoApi($this->base_url . '/api/token', 'POST', $p);
 
         if (!$res || !is_object($res)) {
             $this->l("Api authentication failed");
