@@ -1,0 +1,47 @@
+{% set pagetitle = 'Notakey authentication'|trans %}
+{% extends "base.twig" %}
+
+{% block preload %}
+    <link rel="stylesheet" href="{{ asset('css/notakey.css', 'notakey') }}">
+{% endblock %}
+
+{% block postload %}
+    <script src="{{ asset('js/notakey.js', 'notakey') }}"></script>
+{% endblock %}
+
+{% block content %}
+    {% include '@notakey/_messages.twig' %}
+
+    <h2 id="authHeaderTitle">{{ 'Authentication request'|trans }}</h2>
+    <p class="logintext">{{ 'Have your mobile device handy to approve authentication request in mobile app.'|trans }}</p>
+
+    <div id="authContent"
+         data-auth-url="{{ auth_url }}"
+         {% if stage_one_complete and auth_state == 'pending' %}data-status-url="{{ status_url }}"{% endif %}>
+        {% if not stage_one_complete or auth_state != 'pending' %}
+            <div id="loginTableView">
+                <form action="{{ form_url }}" id="loginPostForm" method="post">
+                    <div class="control-group ntk-select-message">
+                        {{ 'Please select your authentication provider, by clicking on appropriate logo'|trans }}
+                    </div>
+                    <div class="ntk-service-list">
+                        {% for app_id, s in service_list %}
+                            <div class="control-group service-logo">
+                                <label class="service-selector">
+                                    <input type="radio" name="service_id" value="{{ app_id }}"
+                                           {{ selected_service is not null and app_id ~ '' == selected_service ~ '' ? 'checked' }}>
+                                    <img alt="{{ s.name }}" src="{{ s.service_logo|default('') }}">
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div id="loginForm">
+                        {% include '@notakey/_username.twig' %}
+                    </div>
+                </form>
+            </div>
+        {% else %}
+            {% include '@notakey/_progress.twig' %}
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,15 @@
+<div class="ntk-progress">
+    {% if service %}
+        <div id="spLoginLogo">
+            <img alt="{{ service.name }} logo" src="{{ service.service_logo|default('') }}">
+        </div>
+    {% endif %}
+    <div class="ntk-progress-status">
+        <div id="progressind">
+            <img height="40" width="40" alt="" src="{{ asset('images/loading.gif', 'notakey') }}">
+        </div>
+        <div id="progresstxt">
+            {{ 'Authentication request created successfully. Please proceed with authentication on your mobile device.'|trans }}
+        </div>
+    </div>
+</div>

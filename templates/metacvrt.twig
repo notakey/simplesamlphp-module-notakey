@@ -1,0 +1,29 @@
+{% set pagetitle = 'Metadata parser'|trans %}
+{% extends "base.twig" %}
+
+{% block content %}
+    <h2>{{ 'Metadata parser'|trans }}</h2>
+    <form action="?" method="post" enctype="multipart/form-data" class="pure-form">
+        <p>{{ 'XML metadata'|trans }}</p>
+        <p>
+            <textarea rows="20" class="pure-input-1" name="xmldata">{{ xmldata }}</textarea>
+        </p>
+        <p>
+            {{ 'or select a file:'|trans }}
+            <input type="file" name="xmlfile">
+        </p>
+        <p>
+            <button type="submit" class="pure-button pure-button-primary">{{ 'Parse'|trans }}</button>
+        </p>
+    </form>
+
+    {% if output is not empty %}
+        <h2>{{ 'Converted metadata'|trans }}</h2>
+        {% for type, text in output %}
+            <h3>{{ type }}</h3>
+            <div class="metadatabox">
+                <pre>{{ text }}</pre>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

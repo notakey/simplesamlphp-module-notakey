@@ -1,0 +1,45 @@
+{% set pagetitle = 'Notakey authentication'|trans %}
+{% extends "base.twig" %}
+
+{% block preload %}
+    <link rel="stylesheet" href="{{ asset('css/notakey.css', 'notakey') }}">
+{% endblock %}
+
+{% block postload %}
+    <script src="{{ asset('js/notakey.js', 'notakey') }}"></script>
+{% endblock %}
+
+{% block content %}
+    {% include '@notakey/_messages.twig' %}
+
+    <h2 id="authHeaderTitle">{{ 'Authentication request'|trans }}</h2>
+    <p class="logintext">{{ 'Have your mobile device handy to approve authentication request in mobile app.'|trans }}</p>
+
+    <div id="authContent"
+         data-auth-url="{{ auth_url }}"
+         {% if stage_one_complete %}data-status-url="{{ status_url }}"{% endif %}
+         {% if not stage_one_complete and service and not mobile %}data-qrstat-url="{{ qrstat_url }}"{% endif %}>
+        {% if not stage_one_complete %}
+            <div id="loginTableView">
+                <form action="{{ form_url }}" id="loginPostForm" method="post">
+                    <div id="loginForm">
+                        {% if service %}
+                            <div id="spLoginLogo">
+                                <img alt="{{ service.name }} logo" src="{{ service.service_logo|default('') }}">
+                            </div>
+                        {% endif %}
+                        {% include '@notakey/_username.twig' %}
+                        <input type="hidden" name="service_id" value="0">
+                    </div>
+                    {% if service and not mobile %}
+                        <div id="qrCodeView">
+                            <img alt="Authentication QR code" src="{{ qr_link }}" height="300" width="300">
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+        {% else %}
+            {% include '@notakey/_progress.twig' %}
+        {% endif %}
+    </div>
+{% endblock %}

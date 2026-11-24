@@ -1,5 +1,33 @@
 # Notakey module for SimpleSAMLphp
 
+## Requirements
+
+- Version 3.x of this module requires SimpleSAMLphp 2.5 or newer and PHP 8.3 or newer.
+  Use the 2.x releases of this module with SimpleSAMLphp 1.x.
+
+## Installation
+
+```shell
+composer require notakey/simplesamlphp-module-notakey
+```
+
+Enable the module in `config/config.php`:
+
+```php
+'module.enable' => [
+    'notakey' => true,
+    // ...
+],
+```
+
+## Upgrading from 2.x
+
+- The module now lives in the `SimpleSAML\Module\notakey` namespace. Configuration references
+  (`notakey:Process`, `notakey:Filter`) are unchanged.
+- TLS certificates of the Notakey API are now validated. Use the `tls.cafile` endpoint option to trust
+  a private CA. Validation can be disabled per endpoint with `"tls.verify" => false`; this is not recommended.
+- Authentication sessions started before the upgrade are not carried over.
+
 ## Configuration
 
 ### Authsource
@@ -31,7 +59,9 @@ Needs configuration in authsources listing all allowed backends
             // Source name from authsources
             "stepup-source" =>  "ntk-radius",
             // Valid for 1 year
-            "stepup-duration" => "P1Y"
+            "stepup-duration" => "P1Y",
+            // Optional: CA bundle used to validate the API certificate
+            // "tls.cafile" => "/etc/ssl/certs/my-ca.pem",
         ),
         array(
             'name' => 'Notakey service 2',
