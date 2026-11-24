@@ -361,8 +361,10 @@ class SspNtkBridge
 
         $cookieName = $this->getAuthId() . '-loop-detection';
         if (isset($_COOKIE[$cookieName]) && is_string($_COOKIE[$cookieName])) {
-            $time = unserialize(base64_decode($_COOKIE[$cookieName]), ['allowed_classes' => false]);
-            if (is_int($time) && (time() - $time) < 5) {
+            // Plain digits only: browser input is never unserialized
+            $value = $_COOKIE[$cookieName];
+            $time = (preg_match('/^[0-9]{1,12}$/D', $value) === 1) ? (int) $value : null;
+            if ($time !== null && (time() - $time) < 5) {
                 throw new Error\Exception(
                     'Login loop detected, seems like there is a problem with configuration. Please contact your support.',
                 );
@@ -381,7 +383,7 @@ class SspNtkBridge
         $params['expire'] = time() + 600;
         (new Utils\HTTP())->setCookie(
             $this->getAuthId() . '-loop-detection',
-            base64_encode(serialize(time())),
+            (string) time(),
             $params,
             false,
         );
@@ -819,7 +821,7 @@ class SspNtkBridge
         $sessionId = self::getSessionId();
         $store = self::getStore();
         $store->set('notakey-stepup', $sessionId, ['username' => $username], $params['expire']);
-        (new Utils\HTTP())->setCookie($cookieKey, base64_encode(serialize($sessionId)), $params, false);
+        (new Utils\HTTP())->setCookie($cookieKey, $sessionId, $params, false);
 
         return true;
     }
@@ -829,8 +831,9 @@ class SspNtkBridge
         self::d(__FUNCTION__ . ": called for {$this->getAuthId()} user $username, service $service_id");
         $cookieKey = self::getCookieKey($service_id, $username);
         if (isset($_COOKIE[$cookieKey]) && is_string($_COOKIE[$cookieKey])) {
-            $sessionId = unserialize(base64_decode($_COOKIE[$cookieKey]), ['allowed_classes' => false]);
-            if (!is_string($sessionId)) {
+            // Hex session id from getSessionId(): browser input is never unserialized
+            $sessionId = $_COOKIE[$cookieKey];
+            if (preg_match('/^[0-9a-f]{32}$/D', $sessionId) !== 1) {
                 return false;
             }
 

@@ -260,7 +260,16 @@ class NtkAsApi
         try {
             $token = $this->store->get('ntk_access_token', md5($this->base_url));
             if (is_string($token)) {
-                [$this->_accessToken, $this->_accessTokenExpires] = unserialize($token, ['allowed_classes' => false]);
+                $data = json_decode($token, true);
+                if (
+                    is_array($data)
+                    && isset($data['access_token'], $data['expires'])
+                    && is_string($data['access_token'])
+                    && is_int($data['expires'])
+                ) {
+                    $this->_accessToken = $data['access_token'];
+                    $this->_accessTokenExpires = $data['expires'];
+                }
             }
         } catch (Exception $ex) {
             $this->l("getAccessToken no valid token found: " . $ex->getMessage());
@@ -293,7 +302,7 @@ class NtkAsApi
         $this->store->set(
             'ntk_access_token',
             md5($this->base_url),
-            serialize([$this->_accessToken, $this->_accessTokenExpires]),
+            json_encode(['access_token' => $this->_accessToken, 'expires' => $this->_accessTokenExpires]),
             $this->_accessTokenExpires,
         );
 
