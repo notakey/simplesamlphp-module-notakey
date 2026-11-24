@@ -70,33 +70,41 @@ if ($state['notakey:stageOneComplete'] && isset($state['notakey:uuid'])) {
         Logger::warning("API request UUID {$state['notakey:uuid']} query failed: " . $e->getMessage());
     }
 
+    $status = 'error';
     if ($res) {
-        if (isset($res['response_type']) && $res['response_type'] == 'ApproveRequest') {
-            Logger::info("API request UUID {$state['notakey:uuid']} login OK");
+        $status = $bridge->checkAuthResponse(
+            $state,
+            $res,
+            (string) $state['notakey:uuid'],
+            $state['notakey:qrState'] ?? null,
+        );
+    }
 
-            $bridge->setUser($state, $res);
-            $stateId = Auth\State::saveState($state, SspNtkBridge::STAGEID);
-            $httpUtils->redirectTrustedURL($returnTo);
-        }
+    if ($status === 'approved') {
+        Logger::info("API request UUID {$state['notakey:uuid']} login OK");
 
-        if (isset($res['response_type']) && $res['response_type'] == 'DenyRequest') {
-            Logger::info("API request UUID {$state['notakey:uuid']} denied login");
+        $bridge->markAuthUsed((string) $state['notakey:uuid'], $state);
+        unset($state['notakey:qrState']);
+        $bridge->setUser($state, $res);
+        $stateId = Auth\State::saveState($state, SspNtkBridge::STAGEID);
+        $httpUtils->redirectTrustedURL($returnTo);
+    }
+
+    if ($status !== 'pending') {
+        Logger::info("API request UUID {$state['notakey:uuid']} status $status");
+
+        if ($status === 'denied') {
             $warning_messages[] = 'Authentication request denied by user, please try again.';
-            $state['notakey:stageOneComplete'] = false;
             $authstate = 'denied';
-        }
-
-        if (!empty($res['expired'])) {
-            Logger::info("API request UUID {$state['notakey:uuid']} expired");
+        } else {
             $warning_messages[] = 'Authentication procedure expired, please try again.';
-            $state['notakey:stageOneComplete'] = false;
             $authstate = 'expired';
         }
-    } else {
-        Logger::info("API request UUID {$state['notakey:uuid']} error");
-        $warning_messages[] = 'Authentication procedure expired, please try again.';
+
+        // Start over: forget the request, so it cannot be checked again for this sign-in
         $state['notakey:stageOneComplete'] = false;
-        $authstate = 'expired';
+        unset($state['notakey:uuid'], $state['notakey:qruuid'], $state['notakey:qrState']);
+        $stateId = Auth\State::saveState($state, SspNtkBridge::STAGEID);
     }
 }
 

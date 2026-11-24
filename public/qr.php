@@ -35,7 +35,7 @@ if (!empty($endpoint['profile_id'])) {
     $query['c'] = Module::getModuleURL('notakey/callback.php');
     $query['m'] = SspNtkBridge::AUTH_ACTION;
     $query['d'] = $state['notakey:bridge']->parseAuthMessage("Proceed with login to " . $endpoint['name'] . '?');
-    $query['t'] = 600;
+    $query['t'] = SspNtkBridge::QR_TTL;
 }
 
 $options = new QROptions([

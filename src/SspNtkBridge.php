@@ -50,7 +50,7 @@ class SspNtkBridge
     public const CLOCK_SKEW = 60;
 
     /**
-     * Store key prefix for auth request ids that have already been used to sign in
+     * Store type for auth request ids that have already been used to sign in
      */
     private const USED_STORE_TYPE = 'notakey-used-auth';
 

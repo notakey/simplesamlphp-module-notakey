@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use SimpleSAML\Auth;
 use SimpleSAML\Error;
+use SimpleSAML\Module\notakey\SspNtkBridge;
 use SimpleSAML\Session;
 
 if (!isset($_REQUEST['state'])) {
@@ -15,6 +16,10 @@ if (!isset($_REQUEST['uuid'])) {
 }
 
 $auth_uuid = urldecode((string) $_REQUEST['uuid']);
+
+if (!SspNtkBridge::isValidUuid($auth_uuid)) {
+    throw new Error\BadRequest('Invalid "uuid" parameter.');
+}
 $stateParts = explode(':', urldecode((string) $_REQUEST['state']), 3);
 
 if (count($stateParts) !== 3) {
@@ -43,6 +48,7 @@ if (!is_array($state) || !isset($state['notakey:bridge']) || !is_object($state['
 
 $state['notakey:bridge']->setService($state, $service_id);
 $state['notakey:stageOneComplete'] = true;
+// Only a candidate: qrstat.php checks that the request belongs to this sign-in before using it
 $state['notakey:qruuid'] = $auth_uuid;
 
 $state_str = serialize($state);
