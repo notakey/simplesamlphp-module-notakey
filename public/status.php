@@ -50,23 +50,21 @@ if (!$res) {
 }
 
 Logger::info("queryAuth response data set to " . json_encode($res));
-if (isset($res['response_type']) && $res['response_type'] == 'ApproveRequest') {
-    echo 'approved';
-    Logger::info("UUID {$state['notakey:uuid']} login confirmed");
+
+$status = $state['notakey:bridge']->checkAuthResponse(
+    $state,
+    $res,
+    (string) $state['notakey:uuid'],
+    $state['notakey:qrState'] ?? null,
+);
+
+Logger::info("UUID {$state['notakey:uuid']} login status $status");
+
+if ($status === 'pending') {
+    echo 'noop';
     exit();
 }
 
-if (isset($res['response_type']) && $res['response_type'] == 'DenyRequest') {
-    echo 'denied';
-    Logger::info("UUID {$state['notakey:uuid']} login denied");
-    exit();
-}
-
-if (!empty($res['expired'])) {
-    echo 'expired';
-    Logger::info("UUID {$state['notakey:uuid']} login expired");
-    exit();
-}
-
-echo 'noop';
+// auth.php shows the outcome; an invalid request is reported as expired
+echo $status === 'invalid' ? 'expired' : $status;
 exit();
