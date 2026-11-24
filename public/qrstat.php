@@ -24,50 +24,64 @@ if (!isset($state['notakey:qruuid'])) {
     exit();
 }
 
+/** @var SspNtkBridge $bridge */
+$bridge = $state['notakey:bridge'];
+$uuid = (string) $state['notakey:qruuid'];
+
 $res = false;
+$expectedState = null;
 try {
-    $res = $state['notakey:bridge']->queryAuth($state, $state['notakey:qruuid']);
+    $bridge->setService($state);
+    // The callback state this sign-in put in its QR code; the request must carry it
+    $expectedState = $bridge->getCallbackState();
+    $res = $bridge->queryAuth($state, $uuid);
 } catch (Exception $e) {
-    Logger::error("Unable to query auth UUID {$state['notakey:qruuid']}: " . $e->getMessage());
+    Logger::error("Unable to query auth UUID $uuid: " . $e->getMessage());
 }
 
 if (!$res) {
+    // Forget the id, so that a bogus callback cannot keep this sign-in in an error loop
+    unset($state['notakey:qruuid']);
+    $state['notakey:stageOneComplete'] = isset($state['notakey:uuid']);
+    Auth\State::saveState($state, SspNtkBridge::STAGEID);
     sleep(10);
     echo 'error';
-    Logger::error("Unable to query auth UUID {$state['notakey:qruuid']}");
+    Logger::error("Unable to query auth UUID $uuid");
     exit();
 }
 
 Logger::info("queryAuth response data set to " . json_encode($res));
-if (isset($res['response_type']) && $res['response_type'] == 'ApproveRequest') {
-    Logger::info("UUID {$state['notakey:qruuid']} login confirmed");
-    $state['notakey:bridge']->setAuthState($state, $res);
-    $state['notakey:bridge']->setUser($state, $res);
 
+$status = $bridge->checkAuthResponse($state, $res, $uuid, $expectedState);
+
+if ($status === 'pending') {
+    echo 'noop';
+    sleep(2);
+    exit();
+}
+
+unset($state['notakey:qruuid']);
+
+if ($status === 'approved') {
+    Logger::info("UUID $uuid login confirmed");
+    $res['uuid'] = $uuid;
+    $bridge->setAuthState($state, $res);
+    // auth.php checks the request again against this state before signing in
+    $state['notakey:qrState'] = $expectedState;
     Auth\State::saveState($state, SspNtkBridge::STAGEID);
-
     echo 'approved';
     exit();
 }
 
-if (isset($res['response_type']) && $res['response_type'] == 'DenyRequest') {
-    Logger::info("UUID {$state['notakey:qruuid']} login denied");
-    $state['notakey:stageOneComplete'] = false;
-    unset($state['notakey:qruuid']);
-    Auth\State::saveState($state, SspNtkBridge::STAGEID);
-    echo 'denied';
+Logger::info("UUID $uuid login $status");
+$state['notakey:stageOneComplete'] = isset($state['notakey:uuid']);
+Auth\State::saveState($state, SspNtkBridge::STAGEID);
+
+if ($status === 'invalid') {
+    // not a final status for the page: it keeps waiting for a valid QR sign-in
+    echo 'noop';
     exit();
 }
 
-if (!empty($res['expired'])) {
-    Logger::info("UUID {$state['notakey:qruuid']} login expired");
-    $state['notakey:stageOneComplete'] = false;
-    unset($state['notakey:qruuid']);
-    Auth\State::saveState($state, SspNtkBridge::STAGEID);
-    echo 'expired';
-    exit();
-}
-
-echo 'noop';
-sleep(2);
+echo $status;
 exit();
