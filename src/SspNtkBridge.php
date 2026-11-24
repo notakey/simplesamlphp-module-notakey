@@ -40,6 +40,21 @@ class SspNtkBridge
     public const AUTH_DESCRIPTION = 'Log in as %s?';
 
     /**
+     * Lifetime in seconds of auth requests created by the mobile app from the QR code
+     */
+    public const QR_TTL = 600;
+
+    /**
+     * Allowed clock difference in seconds between SSO and the Notakey API
+     */
+    public const CLOCK_SKEW = 60;
+
+    /**
+     * Store key prefix for auth request ids that have already been used to sign in
+     */
+    private const USED_STORE_TYPE = 'notakey-used-auth';
+
+    /**
      * Endpoint configuration array
      */
     private array $endpoints = [];
@@ -346,8 +361,10 @@ class SspNtkBridge
 
         $cookieName = $this->getAuthId() . '-loop-detection';
         if (isset($_COOKIE[$cookieName]) && is_string($_COOKIE[$cookieName])) {
-            $time = unserialize(base64_decode($_COOKIE[$cookieName]), ['allowed_classes' => false]);
-            if (is_int($time) && (time() - $time) < 5) {
+            // Plain digits only: browser input is never unserialized
+            $value = $_COOKIE[$cookieName];
+            $time = (preg_match('/^[0-9]{1,12}$/D', $value) === 1) ? (int) $value : null;
+            if ($time !== null && (time() - $time) < 5) {
                 throw new Error\Exception(
                     'Login loop detected, seems like there is a problem with configuration. Please contact your support.',
                 );
@@ -366,7 +383,7 @@ class SspNtkBridge
         $params['expire'] = time() + 600;
         (new Utils\HTTP())->setCookie(
             $this->getAuthId() . '-loop-detection',
-            base64_encode(serialize(time())),
+            (string) time(),
             $params,
             false,
         );
@@ -419,6 +436,10 @@ class SspNtkBridge
 
     public function queryAuth(array &$state, string $uuid): array|false
     {
+        if (!self::isValidUuid($uuid)) {
+            throw new Error\Exception('Invalid authentication request id.');
+        }
+
         if ($uuid == 'nonexistant') {
             $s = ['expired' => false];
 
@@ -429,6 +450,173 @@ class SspNtkBridge
         }
 
         return $this->ntkapi()->query($uuid);
+    }
+
+    /**
+     * Auth request ids are used in API paths, accept only plain identifiers.
+     */
+    public static function isValidUuid(string $uuid): bool
+    {
+        return preg_match('/^[A-Za-z0-9-]{1,128}$/', $uuid) === 1;
+    }
+
+    /**
+     * Decide what an auth request status returned by the API means for this sign-in.
+     *
+     * An approval or denial counts only if the request is not expired, was created after this
+     * sign-in started, has not been used to sign in before and, when $expectedState is given
+     * (QR flow, where the request id comes from the unauthenticated callback), carries the
+     * callback state that this sign-in issued.
+     *
+     * @param array $state  The sign-in state.
+     * @param array $res  The auth request as returned by queryAuth().
+     * @param string $uuid  The auth request id that was queried.
+     * @param string|null $expectedState  Callback state the request must carry, null to skip the check.
+     *
+     * @return string One of approved, denied, expired, pending or invalid.
+     */
+    public function checkAuthResponse(array $state, array $res, string $uuid, ?string $expectedState = null): string
+    {
+        $now = time();
+
+        // Expiry first: an expired request must never be accepted, whatever its response.
+        if (!empty($res['expired'])) {
+            return 'expired';
+        }
+
+        $responseType = $res['response_type'] ?? null;
+        $answered = in_array($responseType, ['ApproveRequest', 'DenyRequest'], true);
+
+        if (isset($res['expires_at'])) {
+            $expiresAt = self::toTimestamp($res['expires_at']);
+            if ($expiresAt === null || $expiresAt <= $now) {
+                Logger::info("checkAuthResponse: UUID $uuid expired");
+                return 'expired';
+            }
+        } elseif ($answered) {
+            Logger::warning("checkAuthResponse: UUID $uuid has no expiry time, refused");
+            return 'invalid';
+        }
+
+        if (!$answered) {
+            return 'pending';
+        }
+
+        if (isset($res['uuid']) && (string) $res['uuid'] !== $uuid) {
+            Logger::warning("checkAuthResponse: UUID $uuid answered for another request id, refused");
+            return 'invalid';
+        }
+
+        if (isset($state['notakey:authtime'])) {
+            $createdAt = isset($res['created_at']) ? self::toTimestamp($res['created_at']) : null;
+            if ($createdAt === null || $createdAt < (int) $state['notakey:authtime'] - self::CLOCK_SKEW) {
+                Logger::warning("checkAuthResponse: UUID $uuid was created before this sign-in started, refused");
+                return 'invalid';
+            }
+        }
+
+        if ($expectedState !== null && !self::stateMatches($expectedState, $res['state'] ?? null)) {
+            Logger::warning("checkAuthResponse: UUID $uuid does not belong to this sign-in, refused");
+            return 'invalid';
+        }
+
+        if ($responseType === 'DenyRequest') {
+            return 'denied';
+        }
+
+        if ($this->isAuthUsed($uuid)) {
+            Logger::warning("checkAuthResponse: UUID $uuid has already been used to sign in, refused");
+            return 'invalid';
+        }
+
+        return 'approved';
+    }
+
+    private static function stateMatches(string $expected, mixed $actual): bool
+    {
+        if (!is_string($actual) || $actual === '') {
+            return false;
+        }
+
+        // The API may return the state URL encoded, as authExt() sends it
+        return hash_equals($expected, $actual) || hash_equals($expected, urldecode($actual));
+    }
+
+    /**
+     * Convert an API time value (Unix time or a date string) to Unix time.
+     */
+    private static function toTimestamp(mixed $value): ?int
+    {
+        if (is_int($value) || is_float($value) || (is_string($value) && is_numeric($value))) {
+            return (int) $value;
+        }
+
+        if (is_string($value) && $value !== '') {
+            $ts = strtotime($value);
+            return $ts === false ? null : $ts;
+        }
+
+        return null;
+    }
+
+    /**
+     * Remember that an auth request was used to sign in, until it expires.
+     */
+    public function markAuthUsed(string $uuid, array $state): void
+    {
+        $store = self::getOptionalStore();
+        if ($store === null) {
+            return;
+        }
+
+        $expiresAt = self::toTimestamp($state['notakey:attr.expires_at'] ?? null) ?? 0;
+        $expiresAt = max($expiresAt, time() + self::QR_TTL) + self::CLOCK_SKEW;
+
+        try {
+            $store->set(self::USED_STORE_TYPE, $this->getServiceKey() . ':' . $uuid, time(), $expiresAt);
+        } catch (Exception $e) {
+            Logger::error("markAuthUsed: Unable to store used UUID $uuid: " . $e->getMessage());
+        }
+    }
+
+    private function isAuthUsed(string $uuid): bool
+    {
+        $store = self::getOptionalStore();
+        if ($store === null) {
+            return false;
+        }
+
+        try {
+            return $store->get(self::USED_STORE_TYPE, $this->getServiceKey() . ':' . $uuid) !== null;
+        } catch (Exception $e) {
+            Logger::error("isAuthUsed: Unable to read used UUID $uuid: " . $e->getMessage());
+            // fail closed: without the store we cannot tell whether the request was used
+            return true;
+        }
+    }
+
+    private function getServiceKey(): string
+    {
+        if (!is_null($this->endpoint_id) && isset($this->endpoints[$this->endpoint_id]['service_id'])) {
+            return (string) $this->endpoints[$this->endpoint_id]['service_id'];
+        }
+
+        return (string) $this->endpoint_id;
+    }
+
+    /**
+     * The configured data store, or null when SimpleSAMLphp keeps data in the PHP session only.
+     */
+    private static function getOptionalStore(): ?StoreInterface
+    {
+        $config = Configuration::getInstance();
+        $store = StoreFactory::getInstance($config->getOptionalString('store.type', 'phpsession'));
+        if ($store === false) {
+            Logger::debug('No data store configured, used auth requests are not remembered across sign-ins');
+            return null;
+        }
+
+        return $store;
     }
 
     private function checkApiAccess(array &$state): bool
@@ -633,7 +821,7 @@ class SspNtkBridge
         $sessionId = self::getSessionId();
         $store = self::getStore();
         $store->set('notakey-stepup', $sessionId, ['username' => $username], $params['expire']);
-        (new Utils\HTTP())->setCookie($cookieKey, base64_encode(serialize($sessionId)), $params, false);
+        (new Utils\HTTP())->setCookie($cookieKey, $sessionId, $params, false);
 
         return true;
     }
@@ -643,8 +831,9 @@ class SspNtkBridge
         self::d(__FUNCTION__ . ": called for {$this->getAuthId()} user $username, service $service_id");
         $cookieKey = self::getCookieKey($service_id, $username);
         if (isset($_COOKIE[$cookieKey]) && is_string($_COOKIE[$cookieKey])) {
-            $sessionId = unserialize(base64_decode($_COOKIE[$cookieKey]), ['allowed_classes' => false]);
-            if (!is_string($sessionId)) {
+            // Hex session id from getSessionId(): browser input is never unserialized
+            $sessionId = $_COOKIE[$cookieKey];
+            if (preg_match('/^[0-9a-f]{32}$/D', $sessionId) !== 1) {
                 return false;
             }
 
